@@ -1,12 +1,15 @@
 package com.barberapp.barberapp.services;
 
+import com.barberapp.barberapp.dtos.BarberDTO;
 import com.barberapp.barberapp.exceptions.BarberNotFoundException;
+import com.barberapp.barberapp.dtos.mappers.BarberMapper;
 import com.barberapp.barberapp.models.Barber;
 import com.barberapp.barberapp.repositories.BarberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +17,15 @@ public class BarberService {
 
     private final BarberRepository barberRepository;
 
-    public List<Barber> getAllBarbers() {
-        return barberRepository.findAll();
+    public List<BarberDTO> getAllBarbers() {
+        return barberRepository.findAll()
+                .stream()
+                .map(BarberMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public BarberDTO getBarberDTOById(Long id) {
+        return BarberMapper.toDTO(getBarberByIdOrThrow(id));
     }
 
     public Barber getBarberByIdOrThrow(Long id) {
@@ -23,17 +33,17 @@ public class BarberService {
                 .orElseThrow(() -> new BarberNotFoundException(id));
     }
 
-    public Barber createBarber(Barber barber) {
-        return barberRepository.save(barber);
+    public BarberDTO createBarber(Barber barber) {
+        return BarberMapper.toDTO(barberRepository.save(barber));
     }
 
-    public Barber updateBarber(Long id, Barber barberDetails) {
+    public BarberDTO updateBarber(Long id, Barber barberDetails) {
         Barber barber = getBarberByIdOrThrow(id);
         barber.setName(barberDetails.getName());
         barber.setContactInfo(barberDetails.getContactInfo());
         barber.setWorkingHours(barberDetails.getWorkingHours());
         barber.setServicesOffered(barberDetails.getServicesOffered());
-        return barberRepository.save(barber);
+        return BarberMapper.toDTO(barberRepository.save(barber));
     }
 
     public void deleteBarber(Long id) {

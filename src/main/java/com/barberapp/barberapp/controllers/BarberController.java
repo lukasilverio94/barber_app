@@ -1,5 +1,6 @@
 package com.barberapp.barberapp.controllers;
 
+import com.barberapp.barberapp.dtos.BarberDTO;
 import com.barberapp.barberapp.models.Barber;
 import com.barberapp.barberapp.services.BarberService;
 import lombok.RequiredArgsConstructor;
@@ -17,24 +18,23 @@ public class BarberController {
     private final BarberService barberService;
 
     @PostMapping
-    public ResponseEntity<Barber> createBarber(@RequestBody Barber barber) {
-        Barber saved = barberService.createBarber(barber);
+    public ResponseEntity<BarberDTO> createBarber(@RequestBody Barber barber) {
+        BarberDTO saved = barberService.createBarber(barber);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Barber> getBarberById(@PathVariable Long id) {
-        return ResponseEntity.ok(barberService.getBarberByIdOrThrow(id));
+    public ResponseEntity<BarberDTO> getBarberById(@PathVariable Long id) {
+        return ResponseEntity.ok(barberService.getBarberDTOById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Barber>> getAllBarbers() {
-        List<Barber> barbers = barberService.getAllBarbers();
-        return ResponseEntity.ok(barbers);
+    public ResponseEntity<List<BarberDTO>> getAllBarbers() {
+        return ResponseEntity.ok(barberService.getAllBarbers());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Barber> updateBarber(@PathVariable Long id, @RequestBody Barber barberDetails) {
+    public ResponseEntity<BarberDTO> updateBarber(@PathVariable Long id, @RequestBody Barber barberDetails) {
         return ResponseEntity.ok(barberService.updateBarber(id, barberDetails));
     }
 
