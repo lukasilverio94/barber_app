@@ -4,10 +4,11 @@ import com.barbershop.dtos.BarberDTO;
 import com.barbershop.models.Barber;
 import com.barbershop.services.BarberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -18,9 +19,9 @@ public class BarberController {
     private final BarberService barberService;
 
     @PostMapping
-    public ResponseEntity<BarberDTO> createBarber(@RequestBody Barber barber) {
-        BarberDTO saved = barberService.createBarber(barber);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    public ResponseEntity<Barber> createBarber(@RequestBody BarberDTO dto) {
+        Barber barber = barberService.createBarber(dto);
+        return ResponseEntity.ok(barber);
     }
 
     @GetMapping("/{id}")
@@ -42,5 +43,13 @@ public class BarberController {
     public ResponseEntity<Void> deleteBarber(@PathVariable Long id) {
         barberService.deleteBarber(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{barberId}/available")
+    public boolean isAvailable(
+            @PathVariable Long barberId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime dateTime
+            ) {
+        return barberService.isBarberAvailable(barberId, dateTime);
     }
 }

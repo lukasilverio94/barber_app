@@ -3,7 +3,9 @@ package com.barbershop.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Data
@@ -15,7 +17,11 @@ public class Barber {
 
     private String name;
     private String contactInfo;
-    private String workingHours; // format: "HH:mm-HH:mm"
+
+    @ElementCollection
+    @MapKeyEnumerated
+    @Column(name = "availability")
+    private Map<DayOfWeek, TimeRange> availableDays;
 
     @OneToMany(mappedBy = "barber")
     private List<Appointment> appointments;
