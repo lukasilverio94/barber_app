@@ -1,38 +1,43 @@
 package com.barbershop.dtos.mappers;
 
-import com.barbershop.dtos.BarberDTO;
 import com.barbershop.models.Barber;
+import com.barbershop.models.TimeRange;
 import com.barbershop.models.Appointment;
+import com.barbershop.dtos.BarberDTO;
+import com.barbershop.dtos.TimeRangeDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BarberMapper {
 
     public static BarberDTO toDTO(Barber barber) {
-        List<Long> appointmentIds = barber.getAppointments() != null
-                ? barber.getAppointments().stream()
-                .map(Appointment::getId)
-                .collect(Collectors.toList())
-                : List.of();
-
         return new BarberDTO(
                 barber.getId(),
                 barber.getName(),
                 barber.getContactInfo(),
-                barber.getWorkingHours(),
-                appointmentIds
+                convertTimeRangeMap(barber.getAvailableDays()),
+                extractAppointmentIds(barber.getAppointments()),
+                barber.getServicesOffered()
         );
     }
 
-    // Optional: if you ever need to convert from DTO to entity
-    public static Barber toEntity(BarberDTO dto) {
-        Barber barber = new Barber();
-        barber.setId(dto.id());
-        barber.setName(dto.name());
-        barber.setContactInfo(dto.contactInfo());
-        barber.setWorkingHours(dto.workingHours());
-        // appointments not set here (requires full Appointment objects)
-        return barber;
+    private static Map<java.time.DayOfWeek, TimeRangeDTO> convertTimeRangeMap(Map<java.time.DayOfWeek, TimeRange> original) {
+        if (original == null) return null;
+
+        return original.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> new TimeRangeDTO(e.getValue().getStartTime(), e.getValue().getEndTime())
+                ));
+    }
+
+    private static List<Long> extractAppointmentIds(List<Appointment> appointments) {
+        if (appointments == null) return null;
+
+        return appointments.stream()
+                .map(Appointment::getId)
+                .collect(Collectors.toList());
     }
 }
