@@ -7,9 +7,10 @@ import java.util.Map;
 public record BarberDTO(
         Long id,
         String name,
-        String contactInfo,
+        String phone,
         Map<DayOfWeek, TimeRangeDTO> availableDays,
         List<Long> appointmentIds,
         List<String> servicesOffered
 ) {
+
 }

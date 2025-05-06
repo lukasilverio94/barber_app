@@ -2,7 +2,10 @@ package com.barbershop.services;
 
 import com.barbershop.dtos.AppointmentCreateDTO;
 import com.barbershop.dtos.AppointmentDTO;
+import com.barbershop.dtos.mappers.AppointmentMapper;
 import com.barbershop.exceptions.AppointmentNotFoundException;
+import com.barbershop.exceptions.BarberNotFoundException;
+import com.barbershop.exceptions.ClientNotFoundException;
 import com.barbershop.models.Appointment;
 import com.barbershop.models.AppointmentStatus;
 import com.barbershop.models.Barber;
@@ -12,80 +15,107 @@ import com.barbershop.repositories.BarberRepository;
 import com.barbershop.repositories.ClientRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/*
-TODO: crete a mapper dto<-->entity later to reduce boilerplate
- */
+import static com.barbershop.dtos.mappers.AppointmentMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
 public class AppointmentService {
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     private final AppointmentRepository appointmentRepository;
     private final BarberRepository barberRepository;
     private final ClientRepository clientRepository;
+    private final NotificationService notificationService;
 
-    public AppointmentDTO createAppointment(AppointmentCreateDTO appointmentCreateDTO) {
-        Barber barber = barberRepository.findById(appointmentCreateDTO.barberId())
-                .orElseThrow(() -> new IllegalArgumentException("Barber not found"));
+    public void createAppointment(AppointmentCreateDTO dto) {
+        Barber barber = barberRepository.findById(dto.barberId())
+                .orElseThrow(() -> new BarberNotFoundException(dto.barberId()));
 
-        Client client = clientRepository.findById(appointmentCreateDTO.clientId())
-                .orElseThrow(() -> new IllegalArgumentException("Client not found"));
+        Client client = clientRepository.findById(dto.clientId())
+                .orElseThrow(() -> new ClientNotFoundException(dto.clientId()));
 
-        // create the Appointment entity from the DTO data
+        Appointment appointment = AppointmentMapper.fromCreateDTO(dto, barber, client);
 
-        Appointment appointment = new Appointment();
-        appointment.setBarber(barber);
-        appointment.setClient(client);
-        appointment.setDateTime(appointmentCreateDTO.dateTime());
-        appointment.setServiceType(appointmentCreateDTO.serviceType());
-        appointment.setStatus(AppointmentStatus.REQUESTED);
-
-        // Save the appointment
-        Appointment savedAppointment = appointmentRepository.save(appointment);
-
-        // Return the saved Appointment as a DTO
-        return new AppointmentDTO(
-                savedAppointment.getId(),
-                savedAppointment.getBarber().getName(),
-                savedAppointment.getClient().getName(),
-                savedAppointment.getDateTime(),
-                savedAppointment.getServiceType(),
-                savedAppointment.getStatus().toString()
+        String message = String.format(
+                "✂️ Pedido de agendamento!\n📅 Data: %s\n🕒 Hora: %s\n✂️ Serviço: %s\n👤 Cliente: %s",
+                appointment.getDateTime().toLocalDate(),
+                appointment.getDateTime().toLocalTime(),
+                appointment.getServiceType(),
+                appointment.getClient().getName()
         );
+
+        notificationService.sendWhatsAppMessage(barber.getPhone(), message);
+
+        appointmentRepository.save(appointment);
+    }
+
+    public Appointment acceptAppointment(Long id) {
+        Appointment appointment = getAppointmentByIdEntity(id);
+
+        if (appointment.getStatus() == AppointmentStatus.ACCEPTED) {
+            throw new IllegalStateException("Appointment is already accepted");
+        }
+
+        appointment.setStatus(AppointmentStatus.ACCEPTED);
+        appointmentRepository.save(appointment);
+
+        String message = String.format(
+                "✅ Agendamento Confirmado!\n📅 Date: %s\n🕒 Time: %s\n✂️ Service: %s\n👤 Barber: %s",
+                appointment.getDateTime().toLocalDate(),
+                appointment.getDateTime().toLocalTime(),
+                appointment.getServiceType(),
+                appointment.getBarber().getName()
+        );
+
+        // Send WhatsApp messages
+        notificationService.sendWhatsAppMessage(appointment.getClient().getPhone(), message);
+        notificationService.sendWhatsAppMessage(appointment.getBarber().getPhone(), message);
+
+        return appointment;
+    }
+
+    public Appointment cancelAppointment(Long id) {
+        Appointment appointment = getAppointmentByIdEntity(id);
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentRepository.save(appointment);
+
+        String message = String.format(
+                "❌ Your appointment on %s at %s has been cancelled.",
+                appointment.getDateTime().toLocalDate(),
+                appointment.getDateTime().toLocalTime()
+        );
+
+        // Send WhatsApp cancellation to client (optional to notify barber too)
+        notificationService.sendWhatsAppMessage(appointment.getClient().getPhone(), message);
+
+        return appointment;
+    }
+
+    private Appointment getAppointmentByIdEntity(Long id) {
+        return appointmentRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Appointment with id {} not found", id);
+                    return new AppointmentNotFoundException(id);
+                });
     }
 
     public AppointmentDTO getAppointmentByIdOrThrow(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-        // Map Appointment to AppointmentDTO
-        return new AppointmentDTO(
-                appointment.getId(),
-                appointment.getBarber().getName(),
-                appointment.getClient().getName(),
-                appointment.getDateTime(),
-                appointment.getServiceType(),
-                appointment.getStatus().toString()
-        );
+        return toDto(appointment);
     }
 
     public List<AppointmentDTO> getAllAppointments() {
-        List<Appointment> appointments = appointmentRepository.findAll();
-
-        // Map Appointment entities to AppointmentDTOs
-        return appointments.stream()
-                .map(appointment -> new AppointmentDTO(
-                        appointment.getId(),
-                        appointment.getBarber().getName(),
-                        appointment.getClient().getName(),
-                        appointment.getDateTime(),
-                        appointment.getServiceType(),
-                        appointment.getStatus().toString()
-                ))
+        return appointmentRepository.findAll()
+                .stream()
+                .map(AppointmentMapper::toDto)
                 .toList();
     }
 
@@ -102,15 +132,7 @@ public class AppointmentService {
 
         Appointment savedAppointment = appointmentRepository.save(existing);
 
-        // Return updated Appointment as DTO
-        return new AppointmentDTO(
-                savedAppointment.getId(),
-                savedAppointment.getBarber().getName(),
-                savedAppointment.getClient().getName(),
-                savedAppointment.getDateTime(),
-                savedAppointment.getServiceType(),
-                savedAppointment.getStatus().toString()
-        );
+        return toDto(savedAppointment);
     }
 
     public void deleteAppointment(Long id) {
@@ -119,4 +141,6 @@ public class AppointmentService {
 
         appointmentRepository.delete(foundAppointment);
     }
+
+
 }

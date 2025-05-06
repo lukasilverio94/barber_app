@@ -26,7 +26,7 @@ public class BarberService {
     public Barber createBarber(BarberDTO dto) {
         Barber barber = new Barber();
         barber.setName(dto.name());
-        barber.setContactInfo(dto.contactInfo());
+        barber.setPhone(dto.phone());
         barber.setServicesOffered(dto.servicesOffered());
 
         // Convert DTO map to TimeRange
@@ -60,7 +60,7 @@ public class BarberService {
     public BarberDTO updateBarber(Long id, Barber barberDetails) {
         Barber barber = getBarberByIdOrThrow(id);
         barber.setName(barberDetails.getName());
-        barber.setContactInfo(barberDetails.getContactInfo());
+        barber.setPhone(barberDetails.getPhone());
         barber.setServicesOffered(barberDetails.getServicesOffered());
         return BarberMapper.toDTO(barberRepository.save(barber));
     }

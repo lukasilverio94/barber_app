@@ -16,7 +16,7 @@ public class Barber {
     private Long id;
 
     private String name;
-    private String contactInfo;
+    private String phone;
 
     @ElementCollection
     @MapKeyEnumerated

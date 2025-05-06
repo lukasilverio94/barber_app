@@ -16,7 +16,7 @@ public class BarberMapper {
         return new BarberDTO(
                 barber.getId(),
                 barber.getName(),
-                barber.getContactInfo(),
+                barber.getPhone(),
                 convertTimeRangeMap(barber.getAvailableDays()),
                 extractAppointmentIds(barber.getAppointments()),
                 barber.getServicesOffered()
