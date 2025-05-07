@@ -17,7 +17,7 @@ public class Appointment {
     private Barber barber;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    private Client client;
+    private Customer customer;
 
     private LocalDateTime dateTime;
     private String serviceType;

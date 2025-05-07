@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record AppointmentCreateDTO(
         Long barberId,
-        Long clientId,
+        Long customerId,
         LocalDateTime dateTime,
         String serviceType
 ) {

@@ -9,10 +9,10 @@ import com.barbershop.exceptions.ClientNotFoundException;
 import com.barbershop.models.Appointment;
 import com.barbershop.models.AppointmentStatus;
 import com.barbershop.models.Barber;
-import com.barbershop.models.Client;
+import com.barbershop.models.Customer;
 import com.barbershop.repositories.AppointmentRepository;
 import com.barbershop.repositories.BarberRepository;
-import com.barbershop.repositories.ClientRepository;
+import com.barbershop.repositories.CustomerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,24 +30,24 @@ public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final BarberRepository barberRepository;
-    private final ClientRepository clientRepository;
+    private final CustomerRepository customerRepository;
     private final NotificationService notificationService;
 
     public void createAppointment(AppointmentCreateDTO dto) {
         Barber barber = barberRepository.findById(dto.barberId())
                 .orElseThrow(() -> new BarberNotFoundException(dto.barberId()));
 
-        Client client = clientRepository.findById(dto.clientId())
-                .orElseThrow(() -> new ClientNotFoundException(dto.clientId()));
+        Customer customer = customerRepository.findById(dto.customerId())
+                .orElseThrow(() -> new ClientNotFoundException(dto.customerId()));
 
-        Appointment appointment = AppointmentMapper.fromCreateDTO(dto, barber, client);
+        Appointment appointment = AppointmentMapper.fromCreateDTO(dto, barber, customer);
 
         String message = String.format(
                 "✂️ Pedido de agendamento!\n📅 Data: %s\n🕒 Hora: %s\n✂️ Serviço: %s\n👤 Cliente: %s",
                 appointment.getDateTime().toLocalDate(),
                 appointment.getDateTime().toLocalTime(),
                 appointment.getServiceType(),
-                appointment.getClient().getName()
+                appointment.getCustomer().getName()
         );
 
         notificationService.sendWhatsAppMessage(barber.getPhone(), message);
@@ -74,7 +74,7 @@ public class AppointmentService {
         );
 
         // Send WhatsApp messages
-        notificationService.sendWhatsAppMessage(appointment.getClient().getPhone(), message);
+        notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
         notificationService.sendWhatsAppMessage(appointment.getBarber().getPhone(), message);
 
         return appointment;
@@ -92,7 +92,7 @@ public class AppointmentService {
         );
 
         // Send WhatsApp cancellation to client (optional to notify barber too)
-        notificationService.sendWhatsAppMessage(appointment.getClient().getPhone(), message);
+        notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
 
         return appointment;
     }
@@ -125,7 +125,7 @@ public class AppointmentService {
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
         existing.setBarber(updated.getBarber());
-        existing.setClient(updated.getClient());
+        existing.setCustomer(updated.getCustomer());
         existing.setDateTime(updated.getDateTime());
         existing.setServiceType(updated.getServiceType());
         existing.setStatus(updated.getStatus());
