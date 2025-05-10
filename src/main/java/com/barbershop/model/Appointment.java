@@ -1,5 +1,7 @@
 package com.barbershop.model;
 
+import com.barbershop.enums.AppointmentStatus;
+import com.barbershop.enums.ServiceType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,7 +22,9 @@ public class Appointment {
     private Customer customer;
 
     private LocalDateTime dateTime;
-    private String serviceType;
+
+    @Enumerated(value = EnumType.STRING)
+    private ServiceType serviceType;
 
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status; // Enum for REQUESTED, CONFIRMED, CANCELLED

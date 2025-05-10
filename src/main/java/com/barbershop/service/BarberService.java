@@ -2,6 +2,7 @@ package com.barbershop.service;
 
 import com.barbershop.dto.BarberDTO;
 import com.barbershop.dto.mappers.BarberMapper;
+import com.barbershop.enums.ServiceType;
 import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.model.Barber;
 import com.barbershop.model.TimeRange;
@@ -27,7 +28,7 @@ public class BarberService {
         Barber barber = new Barber();
         barber.setName(dto.name());
         barber.setPhone(dto.phone());
-        barber.setServicesOffered(dto.servicesOffered());
+        barber.setServicesOffered(List.of(ServiceType.CORTE, ServiceType.BARBA));
 
         // Convert DTO map to TimeRange
         Map<DayOfWeek, TimeRange> availability = dto.availableDays().entrySet().stream()

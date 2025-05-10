@@ -1,10 +1,12 @@
 package com.barbershop.dto;
 
+import com.barbershop.enums.ServiceType;
+
 public record AppointmentDTO(
         Long id,
         String barberName,
         String clientName,
-        String serviceType,
+        ServiceType serviceType,
         String date,
         String time,
         String status

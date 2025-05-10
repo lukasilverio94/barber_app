@@ -1,5 +1,6 @@
 package com.barbershop.model;
 
+import com.barbershop.enums.ServiceType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,5 +28,5 @@ public class Barber {
     private List<Appointment> appointments;
 
     @ElementCollection
-    private List<String> servicesOffered;
+    private List<ServiceType> servicesOffered;
 }

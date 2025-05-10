@@ -1,7 +1,7 @@
 package com.barbershop.repository;
 
 import com.barbershop.model.Appointment;
-import com.barbershop.model.AppointmentStatus;
+import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;

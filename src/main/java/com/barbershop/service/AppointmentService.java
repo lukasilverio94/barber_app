@@ -7,7 +7,7 @@ import com.barbershop.exception.AppointmentNotFoundException;
 import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.exception.ClientNotFoundException;
 import com.barbershop.model.Appointment;
-import com.barbershop.model.AppointmentStatus;
+import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
 import com.barbershop.repository.AppointmentRepository;

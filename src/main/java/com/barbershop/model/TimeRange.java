@@ -2,14 +2,12 @@ package com.barbershop.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalTime;
 
-@Getter
-@Setter
 @Embeddable
+@Data
 public class TimeRange {
 
     @Column(name = "start_time")

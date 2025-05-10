@@ -1,4 +1,4 @@
-package com.barbershop.model;
+package com.barbershop.enums;
 
 public enum AppointmentStatus {
     REQUESTED,

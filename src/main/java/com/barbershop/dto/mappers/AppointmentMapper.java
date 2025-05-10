@@ -3,7 +3,7 @@ package com.barbershop.dto.mappers;
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentDTO;
 import com.barbershop.model.Appointment;
-import com.barbershop.model.AppointmentStatus;
+import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
 
