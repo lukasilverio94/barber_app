@@ -26,7 +26,7 @@ CREATE TABLE timeslot (
     start_time timestamp  NOT NULL,
     end_time   timestamp  NOT NULL,
     barber_id  uuid       NOT NULL,
-    timeslot_availability NOT NULL defult 'AVAILABLE',
+    timeslot_availability NOT NULL DEFAULT 'AVAILABLE',
     CONSTRAINT pk_timeslot_id PRIMARY KEY (id),
     CONSTRAINT fk_timeslot_barber FOREIGN KEY (barber_id) REFERENCES app_user (id)
 );
