@@ -11,7 +11,7 @@ CREATE TABLE app_user
     name      varchar(255) NOT NULL,
     phone     varchar(20),
     email     varchar(255) NOT NULL,
-    user_type user_type,
+    user_type user_type    NOT NULL,
     CONSTRAINT pk_app_user_id PRIMARY KEY (id)
 );
 

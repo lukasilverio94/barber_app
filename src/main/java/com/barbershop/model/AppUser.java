@@ -21,7 +21,7 @@ import java.util.UUID;
 @Data
 @Entity(name = "app_user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUser {
@@ -38,11 +38,5 @@ public class AppUser {
 
     @Column(name = "email")
     private String email;
-
-    @Column(name = "user_type")
-    @Enumerated(value = EnumType.STRING)
-    private UserType userType;
-
-
 
 }
