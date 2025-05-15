@@ -5,30 +5,43 @@ import com.barbershop.enums.ServiceType;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.UUID;
 
-@Entity
+@Entity(name = "appointment")
 @Data
 public class Appointment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Barber barber;
+    @Column(name = "day")
+    private LocalDate day;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Customer customer;
+    @Column(name = "start_time")
+    private LocalTime startTime;
 
-    private LocalDateTime dateTime;
+    @Column(name = "end_time")
+    private LocalTime endTime;
 
+    @Column(name = "service")
     @Enumerated(value = EnumType.STRING)
     private ServiceType serviceType;
 
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private AppointmentStatus status; // Enum for REQUESTED, CONFIRMED, CANCELLED
+    private AppointmentStatus status;
 
+    @ManyToOne
+    @JoinColumn(name = "barber_id")
+    private Barber barber;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
 }
 

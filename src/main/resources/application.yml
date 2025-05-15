@@ -6,7 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate  # or none; Flyway manages schema
+      ddl-auto: none  # or none; Flyway manages schema
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:

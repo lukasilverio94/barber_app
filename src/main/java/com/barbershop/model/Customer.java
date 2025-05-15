@@ -5,18 +5,12 @@ import lombok.Data;
 
 import java.util.List;
 
-@Entity
 @Data
-public class Customer {
+@Entity
+@DiscriminatorValue(value = "CUSTOMER")
+public class Customer extends AppUser {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-    private String phone;
-    private String email;
-
-    @OneToMany
-    private List<Appointment> appointments;
+    //private String email;
+    //@OneToMany
+    //private List<Appointment> appointments;
 }

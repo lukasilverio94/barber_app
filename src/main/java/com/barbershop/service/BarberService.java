@@ -5,7 +5,7 @@ import com.barbershop.dto.mappers.BarberMapper;
 import com.barbershop.enums.ServiceType;
 import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.model.Barber;
-import com.barbershop.model.TimeRange;
+import com.barbershop.model.Timeslot;
 import com.barbershop.repository.BarberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,16 +28,16 @@ public class BarberService {
         Barber barber = new Barber();
         barber.setName(dto.name());
         barber.setPhone(dto.phone());
-        barber.setServicesOffered(List.of(ServiceType.CORTE, ServiceType.BARBA));
+        //barber.setServicesOffered(List.of(ServiceType.CORTE, ServiceType.BARBA));
 
         // Convert DTO map to TimeRange
-        Map<DayOfWeek, TimeRange> availability = dto.availableDays().entrySet().stream()
+        /*Map<DayOfWeek, Timeslot> availability = dto.availableDays().entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        e -> new TimeRange(e.getValue().startTime(), e.getValue().endTime())
+                        e -> new Timeslot()
                 ));
-
-        barber.setAvailableDays(availability);
+        */
+        //barber.setAvailableDays(availability);
         return barberRepository.save(barber);
     }
 
@@ -62,7 +62,7 @@ public class BarberService {
         Barber barber = getBarberByIdOrThrow(id);
         barber.setName(barberDetails.getName());
         barber.setPhone(barberDetails.getPhone());
-        barber.setServicesOffered(barberDetails.getServicesOffered());
+        //barber.setServicesOffered(barberDetails.getServicesOffered());
         return BarberMapper.toDTO(barberRepository.save(barber));
     }
 
@@ -76,10 +76,10 @@ public class BarberService {
                 .map(barber -> {
                     DayOfWeek day = dateTime.getDayOfWeek();
                     LocalTime time = dateTime.toLocalTime();
-                    TimeRange timeRange = barber.getAvailableDays().get(day);
-                    return timeRange != null &&
-                            !time.isBefore(timeRange.getStartTime()) &&
-                            !time.isAfter(timeRange.getEndTime());
+                    Timeslot timeslot = null;
+                    return true;/*timeslot != null &&
+                            !time.isBefore(timeslot.getStartTime()) &&
+                            !time.isAfter(timeslot.getEndTime());*/
                 })
                 .orElse(false);
     }

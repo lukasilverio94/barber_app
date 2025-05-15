@@ -44,8 +44,8 @@ public class AppointmentService {
 
         String message = String.format(
                 "✂️ Pedido de agendamento!\n📅 Data: %s\n🕒 Hora: %s\n✂️ Serviço: %s\n👤 Cliente: %s",
-                appointment.getDateTime().toLocalDate(),
-                appointment.getDateTime().toLocalTime(),
+                appointment.getDay(),
+                appointment.getStartTime(),
                 appointment.getServiceType(),
                 appointment.getCustomer().getName()
         );
@@ -67,8 +67,8 @@ public class AppointmentService {
 
         String message = String.format(
                 "✅ Agendamento Confirmado!\n📅 Date: %s\n🕒 Time: %s\n✂️ Service: %s\n👤 Barber: %s",
-                appointment.getDateTime().toLocalDate(),
-                appointment.getDateTime().toLocalTime(),
+                appointment.getDay(),
+                appointment.getStartTime(),
                 appointment.getServiceType(),
                 appointment.getBarber().getName()
         );
@@ -87,8 +87,8 @@ public class AppointmentService {
 
         String message = String.format(
                 "❌ Your appointment on %s at %s has been cancelled.",
-                appointment.getDateTime().toLocalDate(),
-                appointment.getDateTime().toLocalTime()
+                appointment.getDay(),
+                appointment.getStartTime()
         );
 
         // Send WhatsApp cancellation to client (optional to notify barber too)
@@ -126,7 +126,7 @@ public class AppointmentService {
 
         existing.setBarber(updated.getBarber());
         existing.setCustomer(updated.getCustomer());
-        existing.setDateTime(updated.getDateTime());
+        //existing.setDateTime(updated.getDateTime());
         existing.setServiceType(updated.getServiceType());
         existing.setStatus(updated.getStatus());
 
