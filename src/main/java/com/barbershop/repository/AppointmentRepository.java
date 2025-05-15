@@ -1,14 +1,15 @@
 package com.barbershop.repository;
 
-import com.barbershop.model.Appointment;
 import com.barbershop.enums.AppointmentStatus;
+import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
+@Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     List<Appointment> findByBarber(Barber barber);
 
@@ -16,5 +17,4 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findByStatus(AppointmentStatus status);
 
-    Optional<Appointment> findByIdAndStatus(Long id, AppointmentStatus status);
 }
