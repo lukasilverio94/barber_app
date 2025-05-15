@@ -1,6 +1,5 @@
 package com.barbershop.model;
 
-import com.barbershop.enums.Availability;
 import com.barbershop.enums.TimeslotAvailability;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,7 +17,7 @@ public class Timeslot {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "availability", nullable = false)
+    @Column(name = "timeslot_availability", nullable = false)
     private TimeslotAvailability availability = TimeslotAvailability.AVAILABLE;
 
     @Column(name = "day")
