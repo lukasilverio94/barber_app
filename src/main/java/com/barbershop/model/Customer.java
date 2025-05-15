@@ -10,7 +10,6 @@ import java.util.List;
 @DiscriminatorValue(value = "CUSTOMER")
 public class Customer extends AppUser {
 
-    //private String email;
-    //@OneToMany
-    //private List<Appointment> appointments;
+    @OneToMany
+    private List<Appointment> appointments;
 }

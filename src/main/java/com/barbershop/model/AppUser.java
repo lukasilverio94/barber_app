@@ -36,11 +36,13 @@ public class AppUser {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "user_type")
     @Enumerated(value = EnumType.STRING)
     private UserType userType;
 
-    @Column(name = "email")
-    private String email;
+
 
 }

@@ -5,9 +5,7 @@ import com.barbershop.enums.ServiceType;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -27,6 +25,10 @@ public class Appointment {
 
     @Column(name = "end_time")
     private LocalTime endTime;
+
+    @OneToOne
+    @JoinColumn(name = "timeslot_id", unique = true)
+    private Timeslot timeslot;
 
     @Column(name = "service")
     @Enumerated(value = EnumType.STRING)

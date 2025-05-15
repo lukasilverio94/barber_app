@@ -1,20 +1,10 @@
 package com.barbershop.model;
 
 import com.barbershop.enums.Availability;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
+import com.barbershop.enums.TimeslotAvailability;
+import jakarta.persistence.*;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -27,8 +17,9 @@ public class Timeslot {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "timeslot_availability")
-    private Availability availability;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "availability", nullable = false)
+    private TimeslotAvailability availability = TimeslotAvailability.AVAILABLE;
 
     @Column(name = "day")
     private LocalDate day;
@@ -40,7 +31,10 @@ public class Timeslot {
     private LocalTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "barber_id")
+    @JoinColumn(name = "barber_id", nullable = false)
     private Barber barber;
+
+    @OneToOne(mappedBy = "timeslot", cascade = CascadeType.ALL)
+    private Appointment appointment;
 
 }
