@@ -5,9 +5,10 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 public record TimeslotDTO(
-        UUID barberId,
+        UUID id,
         LocalDate day,
         LocalTime startTime,
-        LocalTime endTime
+        LocalTime endTime,
+        UUID barberId
 ) {
 }

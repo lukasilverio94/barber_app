@@ -1,6 +1,7 @@
 package com.barbershop.model;
 
 import com.barbershop.enums.TimeslotAvailability;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,9 +17,9 @@ public class Timeslot {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "timeslot_availability", nullable = false)
-    private TimeslotAvailability availability = TimeslotAvailability.AVAILABLE;
+    private TimeslotAvailability timeslotAvailability = TimeslotAvailability.AVAILABLE;
 
     @Column(name = "day")
     private LocalDate day;
@@ -31,9 +32,9 @@ public class Timeslot {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "barber_id", nullable = false)
+    @JsonIgnore
     private Barber barber;
 
     @OneToOne(mappedBy = "timeslot", cascade = CascadeType.ALL)
     private Appointment appointment;
-
 }
