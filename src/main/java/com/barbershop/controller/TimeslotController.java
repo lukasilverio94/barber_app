@@ -1,6 +1,5 @@
 package com.barbershop.controller;
 
-import com.barbershop.dto.TimeslotCreateDTO;
 import com.barbershop.model.Timeslot;
 import com.barbershop.service.TimeslotService;
 import lombok.RequiredArgsConstructor;
