@@ -2,7 +2,6 @@ package com.barbershop.controller;
 
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentDTO;
-import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.model.Appointment;
 import com.barbershop.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -20,33 +20,17 @@ public class AppointmentController {
 
 
     @PostMapping
-    public ResponseEntity<AppointmentCreateDTO> createAppointment(@RequestBody AppointmentCreateDTO dto) {
-        appointmentService.createAppointment(dto);
-        return ResponseEntity.status(201).body(dto);
+    public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentCreateDTO request) {
+        AppointmentDTO createdAppointment = appointmentService.createAppointment(request);
+        return ResponseEntity.ok(createdAppointment);
     }
 
-    @PostMapping("/{id}/accept")
-    public ResponseEntity<AppointmentDTO> acceptAppointment(@PathVariable Long id) {
-        Appointment appointment = appointmentService.acceptAppointment(id);
-        return ResponseEntity.ok(AppointmentMapper.toDto(appointment));
+    @GetMapping("/{customerId}")
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByCustomer(@PathVariable String customerId) {
+        List<AppointmentDTO> appointments = appointmentService.getAppointmentsByCustomer(UUID.fromString(customerId));
+        return ResponseEntity.ok(appointments);
     }
 
-
-    @PostMapping("/{id}/cancel")
-    public ResponseEntity<Appointment> cancelAppointment(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.cancelAppointment(id));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<AppointmentDTO>> getAllAppointments() {
-        List<AppointmentDTO> appointmentsDTOs = appointmentService.getAllAppointments();
-        return ResponseEntity.ok(appointmentsDTOs);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.getAppointmentByIdOrThrow(id));
-    }
 
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentDTO> updateAppointment(@PathVariable Long id, @RequestBody Appointment appointment) {

@@ -8,13 +8,12 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 public record AppointmentDTO(
-         UUID id,
-         LocalDate day,
-         LocalTime startTime,
-         LocalTime endTime,
-         ServiceType serviceType,
-         AppointmentStatus status,
-         UUID barberId,
-         UUID customerId
-) {
-}
+        UUID id,
+        LocalDate day,
+        LocalTime startTime,
+        LocalTime endTime,
+        ServiceType serviceType,
+        AppointmentStatus status,
+        UUID barberId,
+        UUID customerId
+) {}
