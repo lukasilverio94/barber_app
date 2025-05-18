@@ -1,7 +1,5 @@
 -- ENUMS
 CREATE TYPE user_type AS enum ('BARBER', 'CUSTOMER');
-CREATE TYPE appointment_status AS enum ('REQUESTED', 'CONFIRMED', 'DENIED', 'CANCELED');
-CREATE TYPE service_type AS enum ('HAIRCUT', 'BEARD', 'HAIRCUT_AND_BEARD');
 
 -- TABLES
 
@@ -44,8 +42,8 @@ CREATE TABLE appointment
     end_time    time               NOT NULL,
     customer_id uuid               NOT NULL,
     timeslot_id uuid               NOT NULL,
-    status      appointment_status NOT NULL DEFAULT 'REQUESTED',
-    service     service_type       NOT NULL,
+    status      varchar(20) check ( status in ('REQUESTED', 'CONFIRMED', 'DENIED', 'CANCELED')) NOT NULL DEFAULT 'REQUESTED',
+    service     varchar(20) check (service in ('HAIRCUT', 'BEARD')) NOT NULL,
     CONSTRAINT pk_appointment_id PRIMARY KEY (id),
     CONSTRAINT fk_appointment_customer FOREIGN KEY (customer_id) REFERENCES app_user (id),
     CONSTRAINT fk_appointment_timeslot_id FOREIGN KEY (timeslot_id) REFERENCES timeslot (id),
