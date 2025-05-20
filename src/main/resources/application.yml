@@ -9,6 +9,9 @@ spring:
       ddl-auto: none  # or none; Flyway manages schema
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
   flyway:
     enabled: true
     locations: classpath:db/migration
