@@ -13,10 +13,6 @@ CREATE TABLE app_user
     CONSTRAINT pk_app_user_id PRIMARY KEY (id)
 );
 
--- Separadamente tu cria uma tabela com os horários disponíveis
--- pra um barbeador, ai nela tu referencia o id do barbeador que tá com aquela vaga
--- Nessa tabla tu só colocaria os que tão disponpiveis. Assim que não tiver mais disponivel tu precisa remover
--- ou criar um outro status tipo "OCUPADO"
 CREATE TABLE timeslot
 (
     id                    uuid                                                                       NOT NULL,
@@ -30,10 +26,6 @@ CREATE TABLE timeslot
     CONSTRAINT unique_timeslot UNIQUE (day, start_time, end_time, barber_id)
 );
 
--- Esse aqui seria a tabela com as consultas que já estão marcadas ou então
--- esperando o barbeiro confirmar ou negar e tal
--- na tua aplicação tu tem que fazer a regra de negócio de lidar com os dados dessas duas tabelas
--- a de horários disponíveis e a de consultas que já existem.
 CREATE TABLE appointment
 (
     id          uuid               NOT NULL,

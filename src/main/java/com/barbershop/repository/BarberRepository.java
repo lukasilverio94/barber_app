@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface BarberRepository extends JpaRepository<Barber, UUID> {
 
+    boolean existsByName(String name);
 }

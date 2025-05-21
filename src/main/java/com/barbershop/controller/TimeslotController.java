@@ -21,7 +21,7 @@ public class TimeslotController {
      */
     @PostMapping("/{barberId}")
     public ResponseEntity<String> generateWeeklySlots(@PathVariable UUID barberId) {
-        timeslotService.generateWeeklyTimeslots(barberId);
+        timeslotService.generateMonthlyTimeslots(barberId);
         return ResponseEntity.ok("Weekly timeslots generated for barber " + barberId);
     }
 

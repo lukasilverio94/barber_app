@@ -21,7 +21,7 @@ public class TimeslotService {
     private final TimeslotRepository timeSlotRepository;
     private final BarberRepository barberRepository;
 
-    public void generateWeeklyTimeslots(UUID barberId) {
+    public void generateMonthlyTimeslots(UUID barberId) {
         Barber barber = barberRepository.findById(barberId)
                 .orElseThrow(() -> new IllegalArgumentException("Barber not found"));
 
@@ -31,18 +31,23 @@ public class TimeslotService {
         for (LocalDate date = today; !date.isAfter(endDate); date = date.plusDays(1)) {
             if (date.getDayOfWeek() == DayOfWeek.SUNDAY) continue;
 
-            for (int hour = 8; hour < 20; hour++) {
-                Timeslot slot = new Timeslot();
-                slot.setDay(date);
-                slot.setStartTime(LocalTime.of(hour, 0));
-                slot.setEndTime(LocalTime.of(hour + 1, 0));
-                slot.setBarber(barber);
-                slot.setTimeslotAvailability(TimeslotAvailability.AVAILABLE);
+            LocalTime startTime = LocalTime.of(8, 0);
+            LocalTime endOfDay = LocalTime.of(20, 0);
 
-                // prevent duplicates (constraint will help but still...)
-                if(!timeSlotRepository.existsByDayAndStartTimeAndEndTimeAndBarber(date, slot.getStartTime(), slot.getEndTime(), barber)) {
+            while (startTime.plusMinutes(30).isBefore(endOfDay.plusSeconds(1))) {
+                LocalTime endTime = startTime.plusMinutes(30);
+
+                if (!timeSlotRepository.existsByDayAndStartTimeAndEndTimeAndBarber(date, startTime, endTime, barber)) {
+                    Timeslot slot = new Timeslot();
+                    slot.setDay(date);
+                    slot.setStartTime(startTime);
+                    slot.setEndTime(endTime);
+                    slot.setBarber(barber);
+                    slot.setTimeslotAvailability(TimeslotAvailability.AVAILABLE);
                     timeSlotRepository.save(slot);
                 }
+
+                startTime = startTime.plusMinutes(30);
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.barbershop.service;
 
 import com.barbershop.dto.AppointmentCreateDTO;
-import com.barbershop.dto.AppointmentDTO;
+import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.enums.TimeslotAvailability;
 import com.barbershop.exception.AppointmentNotFoundException;
@@ -34,17 +34,17 @@ public class AppointmentService {
     private final NotificationService notificationService;
 
     @Transactional
-    public AppointmentDTO createAppointment(AppointmentCreateDTO dto) {
+    public AppointmentResponseDTO createAppointment(AppointmentCreateDTO dto) {
         UUID customerId = UUID.fromString(String.valueOf(dto.customerId()));
         UUID barberId = UUID.fromString(String.valueOf(dto.barberId()));
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException(customerId));
 
-        LocalDate date = LocalDate.parse(dto.date());
-        LocalTime time = LocalTime.parse(dto.time());
+        LocalDate date = dto.date();
+        LocalTime time = dto.startTime();
 
-        validateAppointmentTime(LocalTime.parse(dto.time()), LocalDate.parse(dto.date()));
+        validateAppointmentTime(dto.startTime(), dto.date());
 
         Timeslot timeslot = timeslotRepository
                 .findByDayAndStartTimeAndBarberId(date, time, barberId)
@@ -95,6 +95,12 @@ public class AppointmentService {
         notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
     }
 
+    public List<AppointmentResponseDTO> listAll() {
+        var result = appointmentRepository.findAll();
+        return result.stream().map(AppointmentMapper::toDto).toList();
+    }
+
+
     // TODO: fix and implement to accept appointment later
 //    public Appointment acceptAppointment(Long id) {
 //        Appointment appointment = getAppointmentByIdEntity(id);
@@ -139,14 +145,14 @@ public class AppointmentService {
 //    }
 
 
-    public List<AppointmentDTO> getAppointmentsByCustomer(UUID customerId) {
+    public List<AppointmentResponseDTO> getAppointmentsByCustomer(UUID customerId) {
         return appointmentRepository.findByCustomerId(customerId).stream()
                 .map(AppointmentMapper::toDto)
                 .toList();
     }
 
     @Transactional
-    public AppointmentDTO updateAppointment(Long id, Appointment updated) {
+    public AppointmentResponseDTO updateAppointment(Long id, Appointment updated) {
         Appointment existing = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 

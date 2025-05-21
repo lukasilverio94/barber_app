@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:barberapp  # In-memory DB (or use file-based with `jdbc:h2:file:./data/testdb`)
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  flyway:
+    enabled: false
+  h2:
+    console:
+      enabled: true          # Enables the H2 web console at /h2-console
+      path: /h2-console      # Custom path (optional)
+
+  jpa:
+    hibernate:
+      ddl-auto: update       # ? choices: none, validate, update, create, create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

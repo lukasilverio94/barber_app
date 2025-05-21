@@ -17,15 +17,14 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "day")
+    @Column(name = "appt_day")
     private LocalDate day;
 
     @Column(name = "start_time")
     private LocalTime startTime;
 
-    @Column(name = "end_time")
+    @Column(name= "end_time")
     private LocalTime endTime;
-
     @OneToOne
     @JoinColumn(name = "timeslot_id", unique = true)
     private Timeslot timeslot;
@@ -45,6 +44,7 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
 
 }
 

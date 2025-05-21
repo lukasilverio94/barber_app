@@ -1,7 +1,7 @@
 package com.barbershop.dto.mappers;
 
 import com.barbershop.dto.AppointmentCreateDTO;
-import com.barbershop.dto.AppointmentDTO;
+import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.model.Appointment;
 import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.model.Barber;
@@ -14,23 +14,23 @@ import java.util.UUID;
 
 public class AppointmentMapper {
 
-    public static AppointmentDTO toDto(Appointment appointment) {
+    public static AppointmentResponseDTO toDto(Appointment appointment) {
         if (appointment == null) {
             return null;
         }
 
         UUID barberId = appointment.getBarber() != null ? appointment.getBarber().getId() : null;
-        UUID customerId = appointment.getCustomer() != null ? appointment.getCustomer().getId() : null;
 
-        return new AppointmentDTO(
+        assert appointment.getBarber() != null;
+        return new AppointmentResponseDTO(
                 appointment.getId(),
                 appointment.getDay(),
                 appointment.getStartTime(),
-                appointment.getEndTime(),
+                appointment.getTimeslot().getEndTime(),
                 appointment.getServiceType(),
                 appointment.getStatus(),
-                barberId,
-                customerId
+                appointment.getBarber().getId(),
+                appointment.getCustomer().getName()
         );
     }
 
@@ -39,16 +39,16 @@ public class AppointmentMapper {
             return null;
         }
 
-        LocalDate date = LocalDate.parse(dto.date());
-        LocalTime time = LocalTime.parse(dto.time());
+        LocalDate date = dto.date();
+        LocalTime startTime = dto.startTime();
 
         Appointment appointment = new Appointment();
         appointment.setBarber(barber);
         appointment.setCustomer(customer);
         appointment.setTimeslot(timeslot);
         appointment.setDay(date);
-        appointment.setStartTime(time);
-        appointment.setEndTime(time.plusHours(1)); // Assuming 1 hour appointments
+        appointment.setStartTime(startTime);
+        appointment.setEndTime(startTime.plusMinutes(30));
         appointment.setServiceType(dto.serviceType());
         appointment.setStatus(AppointmentStatus.REQUESTED);
 

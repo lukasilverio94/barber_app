@@ -21,7 +21,7 @@ public class Timeslot {
     @Column(name = "timeslot_availability", nullable = false)
     private TimeslotAvailability timeslotAvailability = TimeslotAvailability.AVAILABLE;
 
-    @Column(name = "day")
+    @Column(name = "timeslot_day")
     private LocalDate day;
 
     @Column(name = "start_time")
