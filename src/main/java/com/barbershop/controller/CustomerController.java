@@ -1,12 +1,11 @@
 package com.barbershop.controller;
 
-import com.barbershop.model.Customer;
+import com.barbershop.dto.CustomerCreateDTO;
+import com.barbershop.dto.CustomerDTO;
 import com.barbershop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,8 +16,15 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @PostMapping
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerCreateDTO dto) {
+        CustomerDTO newCustomer = customerService.createCustomer(dto);
+        return ResponseEntity.ok(newCustomer);
+    }
+
+
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
+    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers());
     }
 
