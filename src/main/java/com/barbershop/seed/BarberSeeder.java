@@ -3,9 +3,11 @@ package com.barbershop.seed;
 import com.barbershop.model.Barber;
 import com.barbershop.repository.BarberRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile({"test", "dev"})
 public class BarberSeeder implements CommandLineRunner {
 
     private final BarberRepository repository;
