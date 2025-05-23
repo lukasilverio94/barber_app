@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,8 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerCreateDTO dto) {
         CustomerDTO newCustomer = customerService.createCustomer(dto);
-        return ResponseEntity.ok(newCustomer);
+        URI location = URI.create("/customers/" + newCustomer.id());
+        return ResponseEntity.created(location).body(newCustomer);
     }
 
 

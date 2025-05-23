@@ -19,7 +19,6 @@ public class BarberSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-
         if (!repository.existsByName("Admin Barber")) {
             Barber barber = new Barber();
             barber.setName("Admin Barber");
@@ -29,8 +28,6 @@ public class BarberSeeder implements CommandLineRunner {
             repository.save(barber);
             System.out.println("Barber Admin foi criado com sucesso!");
             System.out.println("Barber ID = " + barber.getId());
-
-
         }
         else {
             System.out.println("Admin Barber já existe. Seeding ignorado");

@@ -3,6 +3,7 @@ package com.barbershop.service;
 import com.barbershop.dto.CustomerCreateDTO;
 import com.barbershop.dto.CustomerDTO;
 import com.barbershop.dto.mappers.CustomerMapper;
+import com.barbershop.exception.EmailAlreadyExistsException;
 import com.barbershop.model.Customer;
 import com.barbershop.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,10 @@ public class CustomerService {
     }
 
     public CustomerDTO createCustomer(CustomerCreateDTO dto) {
+        if(customerRepository.existsByEmail(dto.email())) {
+            throw new EmailAlreadyExistsException("Email already in use");
+        }
+
         Customer customer = CustomerMapper.toEntity(dto);
         Customer savedCustomer = customerRepository.save(customer);
         return CustomerMapper.toDto(savedCustomer);
