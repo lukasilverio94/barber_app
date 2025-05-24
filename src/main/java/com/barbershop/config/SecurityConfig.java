@@ -42,7 +42,7 @@ public class SecurityConfig {
                         auth -> auth
                                 // public endpoints
                                 .requestMatchers(HttpMethod.POST, "/api/customers").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
                                 // restricted endpoints
                                 .requestMatchers(HttpMethod.POST, "/api/timeslots").hasRole("BARBER")
