@@ -31,4 +31,9 @@ public class AppUser {
     @Column(name = "password", nullable = false)
     private String password;
 
+    public String getUserType() {
+        DiscriminatorValue val = this.getClass().getAnnotation(DiscriminatorValue.class);
+        return val != null ? val.value() : "UNKNOWN";
+    }
+
 }

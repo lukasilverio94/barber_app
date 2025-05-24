@@ -16,4 +16,5 @@ public class Customer extends AppUser {
     @OneToMany(mappedBy = "customer")
     @JsonIgnore
     private List<Appointment> appointments;
+
 }
