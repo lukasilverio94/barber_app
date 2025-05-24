@@ -29,3 +29,8 @@ twilio:
     enabled: true
     message: "✅ Appointment confirmed! We'll send a reminder 30 minutes before."
     time-zone: "Europe/Amsterdam"
+jwt:
+  private:
+    key: classpath:app.key
+  public:
+    key: classpath:app.pub
