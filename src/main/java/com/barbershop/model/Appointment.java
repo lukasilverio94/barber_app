@@ -18,7 +18,7 @@ public class Appointment {
     private UUID id;
 
     @Column(name = "appt_day")
-    private LocalDate day;
+    private LocalDate apptDay;
 
     @Column(name = "start_time")
     private LocalTime startTime;

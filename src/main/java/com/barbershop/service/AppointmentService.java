@@ -44,6 +44,10 @@ public class AppointmentService {
         LocalDate date = dto.date();
         LocalTime time = dto.startTime();
 
+        if (dto.date() == null) {
+            throw new IllegalArgumentException("Appointment date is required.");
+        }
+
         validateAppointmentTime(dto.startTime(), dto.date());
 
         Timeslot timeslot = timeslotRepository
@@ -87,7 +91,7 @@ public class AppointmentService {
     private void sendNotificationToCustomer(Appointment appointment) {
         String message = String.format(
                 "✂️ Pedido de agendamento!\n📅 Data: %s\n🕒 Hora: %s\n✂️ Serviço: %s\n👤 Cliente: %s",
-                appointment.getDay(),
+                appointment.getApptDay(),
                 appointment.getStartTime(),
                 appointment.getServiceType(),
                 appointment.getCustomer().getName()

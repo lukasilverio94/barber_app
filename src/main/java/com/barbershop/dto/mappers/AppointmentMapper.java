@@ -24,7 +24,7 @@ public class AppointmentMapper {
         assert appointment.getBarber() != null;
         return new AppointmentResponseDTO(
                 appointment.getId(),
-                appointment.getDay(),
+                appointment.getApptDay(),
                 appointment.getStartTime(),
                 appointment.getTimeslot().getEndTime(),
                 appointment.getServiceType(),
@@ -46,7 +46,7 @@ public class AppointmentMapper {
         appointment.setBarber(barber);
         appointment.setCustomer(customer);
         appointment.setTimeslot(timeslot);
-        appointment.setDay(date);
+        appointment.setApptDay(date);
         appointment.setStartTime(startTime);
         appointment.setEndTime(startTime.plusMinutes(30));
         appointment.setServiceType(dto.serviceType());

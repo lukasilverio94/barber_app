@@ -28,7 +28,7 @@ CREATE TABLE timeslot
 
 CREATE TABLE appointment (
                              id          uuid NOT NULL,
-                             day         date NOT NULL,
+                             aptt_day         date NOT NULL,
                              start_time  time NOT NULL,
                              end_time    time NOT NULL,
                              customer_id uuid NOT NULL,
