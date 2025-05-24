@@ -6,7 +6,6 @@ import com.barbershop.dto.mappers.CustomerMapper;
 import com.barbershop.exception.EmailAlreadyExistsException;
 import com.barbershop.model.Customer;
 import com.barbershop.repository.CustomerRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
