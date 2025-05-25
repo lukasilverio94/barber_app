@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+
 public class UserAuthenticated implements UserDetails {
     private final AppUser user;
 
@@ -49,4 +50,7 @@ public class UserAuthenticated implements UserDetails {
         return true;
     }
 
+    public AppUser getUser() {
+        return this.user;
+    }
 }

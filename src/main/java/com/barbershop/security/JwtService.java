@@ -1,5 +1,6 @@
 package com.barbershop.security;
 
+import com.barbershop.model.AppUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -28,12 +29,18 @@ public class JwtService {
                 .collect(Collectors
                         .joining(" "));
 
+        // get the authenticated user
+        UserAuthenticated userAuthenticated = (UserAuthenticated) authentication.getPrincipal();
+        AppUser user = userAuthenticated.getUser();
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("spring-security-jwt")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiry))
                 .subject(authentication.getName())
                 .claim("scope", scope)
+                .claim("roles", user.getUserType())
+                .claim("userId", user.getId())
                 .build();
 
         return encoder.encode(
