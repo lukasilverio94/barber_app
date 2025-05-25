@@ -33,5 +33,4 @@ build/
 .vscode/
 src/main/resources/*.key
 src/main/resources/*.pub
-src/main/resources/*.key
-src/main/resources/*.pub
+
