@@ -20,9 +20,9 @@ public class TimeslotController {
      * Generate timeslots for 1 week (Monday to Saturday, 8am–8pm)
      */
     @PostMapping("/{barberId}")
-    public ResponseEntity<String> generateWeeklySlots(@PathVariable UUID barberId) {
-        timeslotService.generateMonthlyTimeslots(barberId);
-        return ResponseEntity.ok("Weekly timeslots generated for barber " + barberId);
+    public ResponseEntity<String> generateMonthlyTimeslots(@PathVariable UUID barberId) {
+        timeslotService.generateMonthlyTimeslotsAsync(barberId);
+        return ResponseEntity.accepted().body("Timeslot generation started for barber " + barberId);
     }
 
     /**

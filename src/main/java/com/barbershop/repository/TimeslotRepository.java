@@ -19,4 +19,5 @@ public interface TimeslotRepository extends JpaRepository<Timeslot, UUID> {
 
     Optional<Timeslot> findByDayAndStartTimeAndBarberId(LocalDate day, LocalTime startTime, UUID barberId);
 
+    List<Timeslot> findByBarberAndDayBetween(Barber barber, LocalDate start, LocalDate endDate);
 }
