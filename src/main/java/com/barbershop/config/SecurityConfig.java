@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
                                 // restricted endpoints
+                                .requestMatchers(HttpMethod.POST, "/api/appointments").hasRole("CUSTOMER")
                                 .requestMatchers(HttpMethod.POST, "/api/timeslots").hasRole("BARBER")
                                 .requestMatchers(HttpMethod.PUT, "/api/timeslots").hasRole("BARBER")
                                 .requestMatchers(HttpMethod.DELETE, "/api/timeslots").hasRole("BARBER")
