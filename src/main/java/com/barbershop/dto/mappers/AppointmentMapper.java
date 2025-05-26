@@ -2,15 +2,14 @@ package com.barbershop.dto.mappers;
 
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentResponseDTO;
-import com.barbershop.model.Appointment;
 import com.barbershop.enums.AppointmentStatus;
+import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
 import com.barbershop.model.Timeslot;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
 
 public class AppointmentMapper {
 
@@ -18,8 +17,6 @@ public class AppointmentMapper {
         if (appointment == null) {
             return null;
         }
-
-        UUID barberId = appointment.getBarber() != null ? appointment.getBarber().getId() : null;
 
         assert appointment.getBarber() != null;
         return new AppointmentResponseDTO(
@@ -30,7 +27,8 @@ public class AppointmentMapper {
                 appointment.getServiceType(),
                 appointment.getStatus(),
                 appointment.getBarber().getId(),
-                appointment.getCustomer().getName()
+                appointment.getCustomer().getName(),
+                appointment.getCustomer().getPhone()
         );
     }
 

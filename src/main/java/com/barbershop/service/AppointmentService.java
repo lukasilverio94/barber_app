@@ -3,6 +3,7 @@ package com.barbershop.service;
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
+import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.enums.TimeslotAvailability;
 import com.barbershop.exception.AppointmentNotFoundException;
 import com.barbershop.exception.CustomerNotFoundException;
@@ -104,32 +105,31 @@ public class AppointmentService {
         return result.stream().map(AppointmentMapper::toDto).toList();
     }
 
+    @Transactional
+    public Appointment acceptAppointment(UUID id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentNotFoundException(id));
 
-    // TODO: fix and implement to accept appointment later
-//    public Appointment acceptAppointment(Long id) {
-//        Appointment appointment = getAppointmentByIdEntity(id);
-//
-//        if (appointment.getStatus() == AppointmentStatus.ACCEPTED) {
-//            throw new IllegalStateException("Appointment is already accepted");
-//        }
-//
-//        appointment.setStatus(AppointmentStatus.ACCEPTED);
-//        appointmentRepository.save(appointment);
-//
-//        String message = String.format(
-//                "✅ Agendamento Confirmado!\n📅 Date: %s\n🕒 Time: %s\n✂️ Service: %s\n👤 Barber: %s",
-//                appointment.getDay(),
-//                appointment.getStartTime(),
-//                appointment.getServiceType(),
-//                appointment.getBarber().getName()
-//        );
-//
-//        // Send WhatsApp messages
-//        notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
-//        notificationService.sendWhatsAppMessage(appointment.getBarber().getPhone(), message);
-//
-//        return appointment;
-//    }
+        if (appointment.getStatus() == AppointmentStatus.ACCEPTED) {
+            throw new IllegalStateException("Appointment is already accepted");
+        }
+
+        appointment.setStatus(AppointmentStatus.ACCEPTED);
+        appointmentRepository.save(appointment);
+
+        String message = String.format(
+                "✅ Agendamento Confirmado!\n📅 Date: %s\n🕒 Time: %s\n✂️ Service: %s\n👤 Barber: %s",
+                appointment.getApptDay(),
+                appointment.getStartTime(),
+                appointment.getServiceType(),
+                appointment.getBarber().getName()
+        );
+
+        notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
+        notificationService.sendWhatsAppMessage(appointment.getBarber().getPhone(), message);
+
+        return appointment;
+    }
 //    TODO: fix and implement to cancel appointment later
 //    public Appointment cancelAppointment(Long id) {
 //        Appointment appointment = getAppointmentByIdEntity(id);
@@ -148,7 +148,7 @@ public class AppointmentService {
 //        return appointment;
 //    }
 
-
+    @Transactional
     public List<AppointmentResponseDTO> getAppointmentsByCustomer(UUID customerId) {
         return appointmentRepository.findByCustomerId(customerId).stream()
                 .map(AppointmentMapper::toDto)
@@ -156,22 +156,18 @@ public class AppointmentService {
     }
 
     @Transactional
-    public AppointmentResponseDTO updateAppointment(Long id, Appointment updated) {
+    public AppointmentResponseDTO cancelAppointment(UUID id, Appointment updated) {
         Appointment existing = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-        existing.setBarber(updated.getBarber());
-        existing.setCustomer(updated.getCustomer());
-        //existing.setDateTime(updated.getDateTime());
-        existing.setServiceType(updated.getServiceType());
-        existing.setStatus(updated.getStatus());
-
+        existing.setStatus(AppointmentStatus.CANCELLED);
         Appointment savedAppointment = appointmentRepository.save(existing);
 
         return toDto(savedAppointment);
     }
 
-    public void deleteAppointment(Long id) {
+    @Transactional
+    public void deleteAppointment(UUID id) {
         Appointment foundAppointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFoundException(id));
 

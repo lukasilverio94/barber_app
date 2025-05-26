@@ -15,5 +15,6 @@ public record AppointmentResponseDTO(
         ServiceType serviceType,
         AppointmentStatus status,
         UUID barberId,
-        String customerName
+        String customerName,
+        String customerPhone
 ) {}

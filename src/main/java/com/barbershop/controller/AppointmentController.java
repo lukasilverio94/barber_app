@@ -2,6 +2,7 @@ package com.barbershop.controller;
 
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentResponseDTO;
+import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.model.Appointment;
 import com.barbershop.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,12 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
+    @PutMapping("/{id}/accept")
+    public ResponseEntity<AppointmentResponseDTO> acceptAppointment(@PathVariable UUID id) {
+        Appointment accepted = appointmentService.acceptAppointment(id);
+        return ResponseEntity.ok(AppointmentMapper.toDto(accepted));
+    }
+
     @GetMapping
     public ResponseEntity<List<AppointmentResponseDTO>> listAllAppointments() {
         List<AppointmentResponseDTO> appointments = appointmentService.listAll();
@@ -38,14 +45,14 @@ public class AppointmentController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable Long id, @RequestBody Appointment appointment) {
-        AppointmentResponseDTO updatedAppointment = appointmentService.updateAppointment(id, appointment);
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<AppointmentResponseDTO> cancelAppointment(@PathVariable UUID id, @RequestBody Appointment appointment) {
+        AppointmentResponseDTO updatedAppointment = appointmentService.cancelAppointment(id, appointment);
         return ResponseEntity.ok(updatedAppointment);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAppointment(@PathVariable UUID id) {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.noContent().build();
     }
