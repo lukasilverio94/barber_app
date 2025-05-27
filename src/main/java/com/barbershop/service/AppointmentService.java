@@ -69,7 +69,8 @@ public class AppointmentService {
         );
 
         try {
-            sendNotificationToCustomer(appointment);
+            notificationService.notifyNewAppointmentRequestToCustomer(appointment);
+            notificationService.notifyNewAppointmentRequestToBarber(appointment);
         }
         catch(Exception ex) {
             System.out.println("Failed to send notification for appointment " + appointment.getId());
@@ -77,27 +78,6 @@ public class AppointmentService {
 
         appointmentRepository.save(appointment);
         return AppointmentMapper.toDto(appointment);
-    }
-
-    private void validateAppointmentTime(LocalTime time, LocalDate date) {
-        if (time.isBefore(LocalTime.of(8, 0)) || time.isAfter(LocalTime.of(19, 0))) {
-            throw new IllegalArgumentException("Appointments must be between 8AM and 8PM");
-        }
-
-        if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            throw new IllegalArgumentException("Barbershop is closed on Sundays");
-        }
-    }
-
-    private void sendNotificationToCustomer(Appointment appointment) {
-        String message = String.format(
-                "✂️ Pedido de agendamento!\n📅 Data: %s\n🕒 Hora: %s\n✂️ Serviço: %s\n👤 Cliente: %s",
-                appointment.getApptDay(),
-                appointment.getStartTime(),
-                appointment.getServiceType(),
-                appointment.getCustomer().getName()
-        );
-        notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
     }
 
     public List<AppointmentResponseDTO> listAll() {
@@ -117,16 +97,7 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.ACCEPTED);
         appointmentRepository.save(appointment);
 
-        String message = String.format(
-                "✅ Agendamento Confirmado!\n📅 Date: %s\n🕒 Time: %s\n✂️ Service: %s\n👤 Barber: %s",
-                appointment.getApptDay(),
-                appointment.getStartTime(),
-                appointment.getServiceType(),
-                appointment.getBarber().getName()
-        );
-
-        notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
-        notificationService.sendWhatsAppMessage(appointment.getBarber().getPhone(), message);
+        notificationService.notifyAppointmentAccepted(appointment);
 
         return appointment;
     }
@@ -140,22 +111,15 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentResponseDTO cancelAppointment(UUID id) {
-        Appointment appointmentToBeCanceled = appointmentRepository.findById(id)
+        Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-        String message = String.format(
-                "❌ Your appointment on %s at %s has been cancelled.",
-                appointmentToBeCanceled.getApptDay(),
-                appointmentToBeCanceled.getStartTime()
-        );
+        appointment.setStatus(AppointmentStatus.CANCELED);
+        appointmentRepository.save(appointment);
 
-        // Send WhatsApp cancellation to client (optional to notify barber too)
-        notificationService.sendWhatsAppMessage(appointmentToBeCanceled.getCustomer().getPhone(), message);
-//
-        appointmentToBeCanceled.setStatus(AppointmentStatus.CANCELED);
-        Appointment savedAppointment = appointmentRepository.save(appointmentToBeCanceled);
+        notificationService.notifyAppointmentCanceled(appointment);
 
-        return toDto(savedAppointment);
+        return toDto(appointment);
     }
 
     @Transactional
@@ -166,5 +130,15 @@ public class AppointmentService {
         appointmentRepository.delete(foundAppointment);
     }
 
+    // helper validation appointment
+    private void validateAppointmentTime(LocalTime time, LocalDate date) {
+        if (time.isBefore(LocalTime.of(8, 0)) || time.isAfter(LocalTime.of(19, 0))) {
+            throw new IllegalArgumentException("Appointments must be between 8AM and 8PM");
+        }
+
+        if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            throw new IllegalArgumentException("Barbershop is closed on Sundays");
+        }
+    }
 
 }

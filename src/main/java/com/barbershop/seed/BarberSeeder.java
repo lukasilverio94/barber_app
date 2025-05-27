@@ -28,7 +28,7 @@ public class BarberSeeder implements CommandLineRunner {
             Barber barber = new Barber();
             barber.setId(UUID.fromString("d8493d62-30e2-400d-827a-7e271011074e"));
             barber.setName("Admin Barber");
-            barber.setPhone("+55313131313");
+            barber.setPhone("+5515996452365");
             barber.setEmail("admin@admin.com");
             barber.setPassword(passwordEncoder.encode("admin123"));
             repository.save(barber);
