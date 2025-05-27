@@ -16,7 +16,6 @@ import java.util.UUID;
 public class AppUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(name = "name", nullable = false)
@@ -30,6 +29,13 @@ public class AppUser {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @PrePersist
+    public void ensureId() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+    }
 
     public String getUserType() {
         DiscriminatorValue val = this.getClass().getAnnotation(DiscriminatorValue.class);

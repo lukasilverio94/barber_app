@@ -36,7 +36,7 @@ CREATE TABLE appointment
     customer_id uuid                                                                            NOT NULL,
     timeslot_id uuid                                                                            NOT NULL,
     barber_id   uuid,
-    status      varchar(20) check ( status in ('REQUESTED', 'CONFIRMED', 'DENIED', 'CANCELED')) NOT NULL DEFAULT 'REQUESTED',
+    status      varchar(20) check ( status in ('REQUESTED', 'ACCEPTED', 'DENIED', 'CANCELED')) NOT NULL DEFAULT 'REQUESTED',
     service     varchar(20) check (service in ('HAIRCUT', 'BEARD'))                             NOT NULL,
     CONSTRAINT pk_appointment_id PRIMARY KEY (id),
     CONSTRAINT fk_appointment_customer FOREIGN KEY (customer_id) REFERENCES app_user (id),

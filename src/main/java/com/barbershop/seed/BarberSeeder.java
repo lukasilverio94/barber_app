@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @Profile({"test", "dev"})
 public class BarberSeeder implements CommandLineRunner {
@@ -24,10 +26,10 @@ public class BarberSeeder implements CommandLineRunner {
 
         if (!repository.existsByName("Admin Barber")) {
             Barber barber = new Barber();
+            barber.setId(UUID.fromString("d8493d62-30e2-400d-827a-7e271011074e"));
             barber.setName("Admin Barber");
             barber.setPhone("+55313131313");
             barber.setEmail("admin@admin.com");
-            // todo: on production remove this hardcode password
             barber.setPassword(passwordEncoder.encode("admin123"));
             repository.save(barber);
             System.out.println("Barber Admin foi criado com sucesso!");
