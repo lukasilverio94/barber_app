@@ -30,7 +30,7 @@ CREATE TABLE timeslot
 CREATE TABLE appointment
 (
     id          uuid                                                                            NOT NULL,
-    aptt_day    date                                                                            NOT NULL,
+    appt_day    date                                                                            NOT NULL,
     start_time  time                                                                            NOT NULL,
     end_time    time                                                                            NOT NULL,
     customer_id uuid                                                                            NOT NULL,
@@ -42,5 +42,5 @@ CREATE TABLE appointment
     CONSTRAINT fk_appointment_customer FOREIGN KEY (customer_id) REFERENCES app_user (id),
     CONSTRAINT fk_appointment_timeslot_id FOREIGN KEY (timeslot_id) REFERENCES timeslot (id),
     CONSTRAINT fk_appointment_barber FOREIGN KEY (barber_id) REFERENCES app_user (id),
-    CONSTRAINT unique_appointment UNIQUE (aptt_day, start_time, end_time, customer_id, timeslot_id)
+    CONSTRAINT unique_appointment UNIQUE (appt_day, start_time, end_time, customer_id, timeslot_id)
 );

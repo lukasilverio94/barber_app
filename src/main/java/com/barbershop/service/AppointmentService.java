@@ -156,7 +156,7 @@ public class AppointmentService {
     }
 
     @Transactional
-    public AppointmentResponseDTO cancelAppointment(UUID id, Appointment updated) {
+    public AppointmentResponseDTO cancelAppointment(UUID id) {
         Appointment existing = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 

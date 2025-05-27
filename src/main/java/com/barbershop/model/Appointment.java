@@ -45,6 +45,5 @@ public class Appointment {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-
 }
 
