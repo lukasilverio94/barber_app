@@ -44,7 +44,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<AppointmentResponseDTO> cancelAppointment(@PathVariable UUID id) {
         AppointmentResponseDTO updatedAppointment = appointmentService.cancelAppointment(id);

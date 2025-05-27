@@ -130,23 +130,6 @@ public class AppointmentService {
 
         return appointment;
     }
-//    TODO: fix and implement to cancel appointment later
-//    public Appointment cancelAppointment(Long id) {
-//        Appointment appointment = getAppointmentByIdEntity(id);
-//        appointment.setStatus(AppointmentStatus.CANCELLED);
-//        appointmentRepository.save(appointment);
-//
-//        String message = String.format(
-//                "❌ Your appointment on %s at %s has been cancelled.",
-//                appointment.getDay(),
-//                appointment.getStartTime()
-//        );
-//
-//        // Send WhatsApp cancellation to client (optional to notify barber too)
-//        notificationService.sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
-//
-//        return appointment;
-//    }
 
     @Transactional
     public List<AppointmentResponseDTO> getAppointmentsByCustomer(UUID customerId) {
@@ -157,11 +140,20 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentResponseDTO cancelAppointment(UUID id) {
-        Appointment existing = appointmentRepository.findById(id)
+        Appointment appointmentToBeCanceled = appointmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-        existing.setStatus(AppointmentStatus.CANCELLED);
-        Appointment savedAppointment = appointmentRepository.save(existing);
+        String message = String.format(
+                "❌ Your appointment on %s at %s has been cancelled.",
+                appointmentToBeCanceled.getApptDay(),
+                appointmentToBeCanceled.getStartTime()
+        );
+
+        // Send WhatsApp cancellation to client (optional to notify barber too)
+        notificationService.sendWhatsAppMessage(appointmentToBeCanceled.getCustomer().getPhone(), message);
+//
+        appointmentToBeCanceled.setStatus(AppointmentStatus.CANCELED);
+        Appointment savedAppointment = appointmentRepository.save(appointmentToBeCanceled);
 
         return toDto(savedAppointment);
     }
