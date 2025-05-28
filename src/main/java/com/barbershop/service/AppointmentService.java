@@ -13,13 +13,12 @@ import com.barbershop.model.Timeslot;
 import com.barbershop.repository.AppointmentRepository;
 import com.barbershop.repository.CustomerRepository;
 import com.barbershop.repository.TimeslotRepository;
+import com.barbershop.util.CalendarLinkGenerator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,16 +42,14 @@ public class AppointmentService {
                 .orElseThrow(() -> new CustomerNotFoundException(customerId));
 
         LocalDate date = dto.date();
-        LocalTime time = dto.startTime();
 
-        if (dto.date() == null) {
-            throw new IllegalArgumentException("Appointment date is required.");
-        }
+        LocalTime startTime = dto.startTime();
+        LocalTime endTime = startTime.plusMinutes(30);
 
         validateAppointmentTime(dto.startTime(), dto.date());
 
         Timeslot timeslot = timeslotRepository
-                .findByDayAndStartTimeAndBarberId(date, time, barberId)
+                .findByDayAndStartTimeAndBarberId(date, startTime, barberId)
                 .orElseThrow(() -> new IllegalArgumentException("Timeslot not found"));
 
         if (timeslot.getTimeslotAvailability() != TimeslotAvailability.AVAILABLE) {
@@ -97,7 +94,23 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.ACCEPTED);
         appointmentRepository.save(appointment);
 
-        notificationService.notifyAppointmentAccepted(appointment);
+        ZonedDateTime startZoned = ZonedDateTime.of(
+                appointment.getApptDay(),
+                appointment.getStartTime(),
+                ZoneId.of("America/Sao_Paulo")
+        );
+        ZonedDateTime endZoned = startZoned.plusMinutes(30);
+
+        String calendarLink = CalendarLinkGenerator.generateGoogleCalendarLink(
+                "Barbershop Agendamento - " + appointment.getServiceType().getPortugueseDescription(),
+                "Barbeiro:  " + appointment.getBarber().getName(),
+                "Barbershop / Itapetininga",
+                startZoned,
+                endZoned
+        );
+
+        notificationService.notifyAppointmentAcceptedToCustomer(appointment, calendarLink);
+        notificationService.notifyAppointmentAcceptedToBarber(appointment, calendarLink);
 
         return appointment;
     }

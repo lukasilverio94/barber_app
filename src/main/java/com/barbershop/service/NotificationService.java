@@ -80,15 +80,29 @@ public class NotificationService {
     }
 
 
-    public void notifyAppointmentAccepted(Appointment appointment) {
+    public void notifyAppointmentAcceptedToCustomer(Appointment appointment, String calendarLink) {
         String message = String.format(
                 "✅ Agendamento Confirmado!\n📅 Data: %s\n🕒 Hora: %s\n✂️ Serviço: %s\n👤 Barbeiro: %s",
                 appointment.getApptDay().format(BRAZIL_DATE_FORMATTER),
                 appointment.getStartTime(),
                 appointment.getServiceType().getPortugueseDescription(),
-                appointment.getBarber().getName()
+                appointment.getBarber().getName(),
+                calendarLink
         );
+
         sendWhatsAppMessage(appointment.getCustomer().getPhone(), message);
+    }
+
+    public void notifyAppointmentAcceptedToBarber(Appointment appointment, String calendarLink) {
+        String message = String.format(
+                "📢 Novo agendamento confirmado!\n📅 Data: %s\n🕒 Hora: %s\n✂️ Serviço: %s\n👤 Cliente: %s\n\n📆 Adicione ao Google Calendar:\n%s",
+                appointment.getApptDay().format(BRAZIL_DATE_FORMATTER),
+                appointment.getStartTime(),
+                appointment.getServiceType().getPortugueseDescription(),
+                appointment.getCustomer().getName(),
+                calendarLink
+        );
+        sendWhatsAppMessage(appointment.getBarber().getPhone(), message);
     }
 
     public void notifyAppointmentCanceled(Appointment appointment) {
