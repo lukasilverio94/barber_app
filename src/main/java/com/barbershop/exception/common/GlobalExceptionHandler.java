@@ -1,6 +1,8 @@
 package com.barbershop.exception.common;
 
 import com.barbershop.exception.AppointmentNotFoundException;
+import com.barbershop.exception.BarberNotAvailableException;
+import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.exception.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<Object> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
+        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(BarberNotAvailableException.class)
+    public ResponseEntity<Object> handleBarberNotAvailable(BarberNotAvailableException ex) {
         return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage());
     }
 

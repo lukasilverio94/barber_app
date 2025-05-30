@@ -5,8 +5,9 @@ import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.exception.AppointmentNotFoundException;
+import com.barbershop.exception.BarberNotAvailableException;
+import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.exception.CustomerNotFoundException;
-import com.barbershop.model.AppUser;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
@@ -43,7 +44,7 @@ public class AppointmentService {
                 .orElseThrow(() -> new CustomerNotFoundException(customerId));
 
         Barber barber = appUserRepository.findBarberById(barberId)
-                .orElseThrow(() -> new IllegalArgumentException("Barber not found"));
+                .orElseThrow(() -> new BarberNotFoundException(barberId));
 
         LocalDate date = dto.date();
         LocalTime time = dto.startTime();
@@ -59,7 +60,7 @@ public class AppointmentService {
         );
 
         if (isOverlapping) {
-            throw new IllegalStateException("Barber not available");
+            throw new BarberNotAvailableException("Barber not available");
         }
 
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, (Barber) barber, customer);
