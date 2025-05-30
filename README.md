@@ -2,6 +2,12 @@
 A backend system for managing barbers, customers, and appointments, built with Spring Boot and PostgreSQL. 
 Twilio used for real time messaging on Whatsapp after appointment is confirmed.
 
+## Getting Started
+1. Clone the repository: (SSH)
+```
+git clone git@github.com:lukasilverio94/barber_app.git
+cd barber_app
+```
 ## Requirements
 - Java 21+ 
 - Maven 3.6+
