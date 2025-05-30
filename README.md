@@ -83,9 +83,6 @@ To run tests with the test profile:
 
 Refer to the controller classes under com.barbershop.controller for full endpoints and request mappings.
 
-## Entity Relationship Diagram
-![image](https://github.com/user-attachments/assets/88455c9c-8f2c-45c0-9db6-fd6cc1fc9f86)
-
 ## Access Documentation
 You can check the endpoints on: `http://localhost:8080/swagger-ui/index.html`
 ![img.png](img.png)
