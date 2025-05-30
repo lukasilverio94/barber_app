@@ -13,6 +13,4 @@ import java.util.Map;
 @DiscriminatorValue(value = "BARBER")
 public class Barber extends AppUser {
 
-    @OneToMany(mappedBy = "barber")
-    private List<Timeslot> timeslots;
 }

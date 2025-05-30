@@ -4,15 +4,16 @@ import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.enums.AppointmentStatus;
-import com.barbershop.enums.TimeslotAvailability;
 import com.barbershop.exception.AppointmentNotFoundException;
+import com.barbershop.exception.BarberNotAvailableException;
+import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.exception.CustomerNotFoundException;
 import com.barbershop.model.Appointment;
+import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
-import com.barbershop.model.Timeslot;
+import com.barbershop.repository.AppUserRepository;
 import com.barbershop.repository.AppointmentRepository;
 import com.barbershop.repository.CustomerRepository;
-import com.barbershop.repository.TimeslotRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,50 +30,49 @@ import static com.barbershop.dto.mappers.AppointmentMapper.toDto;
 @RequiredArgsConstructor
 public class AppointmentService {
 
+    private static final LocalTime OPENING_TIME = LocalTime.of(8, 0);
+    private static final LocalTime CLOSING_TIME = LocalTime.of(20, 0);
+    private static final int APPOINTMENT_DURATION_MINUTES = 30;
+
     private final AppointmentRepository appointmentRepository;
     private final CustomerRepository customerRepository;
-    private final TimeslotRepository timeslotRepository;
     private final NotificationService notificationService;
+    private final AppUserRepository appUserRepository;
 
     @Transactional
     public AppointmentResponseDTO createAppointment(AppointmentCreateDTO dto) {
-        UUID customerId = UUID.fromString(String.valueOf(dto.customerId()));
-        UUID barberId = UUID.fromString(String.valueOf(dto.barberId()));
+        UUID customerId = UUID.fromString(dto.customerId().toString());
+        UUID barberId = UUID.fromString(dto.barberId().toString());
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException(customerId));
 
+        Barber barber = appUserRepository.findBarberById(barberId)
+                .orElseThrow(() -> new BarberNotFoundException(barberId));
+
         LocalDate date = dto.date();
         LocalTime time = dto.startTime();
 
-        if (dto.date() == null) {
+        if (date == null) {
             throw new IllegalArgumentException("Appointment date is required.");
         }
 
-        validateAppointmentTime(dto.startTime(), dto.date());
+        validateAppointmentTime(time, date);
 
-        Timeslot timeslot = timeslotRepository
-                .findByDayAndStartTimeAndBarberId(date, time, barberId)
-                .orElseThrow(() -> new IllegalArgumentException("Timeslot not found"));
+        boolean isOverlapping = appointmentRepository.existsByBarberIdAndApptDayAndTimeRange(
+                barberId, date, time, time.plusMinutes(30)
+        );
 
-        if (timeslot.getTimeslotAvailability() != TimeslotAvailability.AVAILABLE) {
-            throw new IllegalStateException("Timeslot is not available");
+        if (isOverlapping) {
+            throw new BarberNotAvailableException("Barber not available at this time. Try again");
         }
 
-        timeslot.setTimeslotAvailability(TimeslotAvailability.UNAVAILABLE);
-
-        Appointment appointment = AppointmentMapper.fromCreateDto(
-                dto,
-                timeslot.getBarber(),
-                customer,
-                timeslot
-        );
+        Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
 
         try {
             notificationService.notifyNewAppointmentRequestToCustomer(appointment);
             notificationService.notifyNewAppointmentRequestToBarber(appointment);
-        }
-        catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Failed to send notification for appointment " + appointment.getId());
         }
 
@@ -80,10 +80,6 @@ public class AppointmentService {
         return AppointmentMapper.toDto(appointment);
     }
 
-    public List<AppointmentResponseDTO> listAll() {
-        var result = appointmentRepository.findAll();
-        return result.stream().map(AppointmentMapper::toDto).toList();
-    }
 
     @Transactional
     public Appointment acceptAppointment(UUID id) {
@@ -132,8 +128,8 @@ public class AppointmentService {
 
     // helper validation appointment
     private void validateAppointmentTime(LocalTime time, LocalDate date) {
-        if (time.isBefore(LocalTime.of(8, 0)) || time.isAfter(LocalTime.of(19, 0))) {
-            throw new IllegalArgumentException("Appointments must be between 8AM and 8PM");
+        if (time.isBefore(OPENING_TIME) || time.plusMinutes(APPOINTMENT_DURATION_MINUTES).isAfter(CLOSING_TIME)) {
+            throw new IllegalArgumentException("Appointments must be between 8AM and 19:30PM");
         }
 
         if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
@@ -141,4 +137,8 @@ public class AppointmentService {
         }
     }
 
+    public List<AppointmentResponseDTO> listAll() {
+        return appointmentRepository.findAll()
+                .stream().map(AppointmentMapper::toDto).toList();
+    }
 }

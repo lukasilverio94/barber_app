@@ -3,7 +3,6 @@ package com.barbershop.service;
 import com.barbershop.dto.BarberDTO;
 import com.barbershop.dto.mappers.BarberMapper;
 import com.barbershop.model.Barber;
-import com.barbershop.model.Timeslot;
 import com.barbershop.repository.BarberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,7 +53,6 @@ public class BarberService {
                 .map(barber -> {
                     DayOfWeek day = dateTime.getDayOfWeek();
                     LocalTime time = dateTime.toLocalTime();
-                    Timeslot timeslot = null;
                     return true;/*timeslot != null &&
                             !time.isBefore(timeslot.getStartTime()) &&
                             !time.isAfter(timeslot.getEndTime());*/

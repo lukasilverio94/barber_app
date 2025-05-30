@@ -25,9 +25,6 @@ public class Appointment {
 
     @Column(name= "end_time")
     private LocalTime endTime;
-    @OneToOne
-    @JoinColumn(name = "timeslot_id", unique = true)
-    private Timeslot timeslot;
 
     @Column(name = "service")
     @Enumerated(value = EnumType.STRING)
