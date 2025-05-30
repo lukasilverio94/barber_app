@@ -6,10 +6,6 @@ import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
-import com.barbershop.model.Timeslot;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class AppointmentMapper {
 
@@ -23,7 +19,7 @@ public class AppointmentMapper {
                 appointment.getId(),
                 appointment.getApptDay(),
                 appointment.getStartTime(),
-                appointment.getTimeslot().getEndTime(),
+                appointment.getEndTime(),
                 appointment.getServiceType(),
                 appointment.getStatus(),
                 appointment.getBarber().getId(),
@@ -32,24 +28,21 @@ public class AppointmentMapper {
         );
     }
 
-    public static Appointment fromCreateDto(AppointmentCreateDTO dto, Barber barber, Customer customer, Timeslot timeslot) {
-        if (dto == null) {
-            return null;
-        }
-
-        LocalDate date = dto.date();
-        LocalTime startTime = dto.startTime();
+    public static Appointment fromCreateDto(AppointmentCreateDTO dto, Barber barber, Customer customer) {
+        if (dto == null) return null;
 
         Appointment appointment = new Appointment();
         appointment.setBarber(barber);
         appointment.setCustomer(customer);
-        appointment.setTimeslot(timeslot);
-        appointment.setApptDay(date);
-        appointment.setStartTime(startTime);
-        appointment.setEndTime(startTime.plusMinutes(30));
+        appointment.setApptDay(dto.date());
+        appointment.setStartTime(dto.startTime());
+        appointment.setEndTime(dto.startTime().plusMinutes(30));
         appointment.setServiceType(dto.serviceType());
         appointment.setStatus(AppointmentStatus.REQUESTED);
 
         return appointment;
     }
+
+
+
 }
