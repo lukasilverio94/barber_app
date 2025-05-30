@@ -2,11 +2,11 @@ package com.barbershop.exception.common;
 
 import com.barbershop.exception.AppointmentNotFoundException;
 import com.barbershop.exception.BarberNotAvailableException;
-import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.exception.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

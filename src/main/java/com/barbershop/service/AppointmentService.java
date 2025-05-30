@@ -63,7 +63,7 @@ public class AppointmentService {
             throw new BarberNotAvailableException("Barber not available");
         }
 
-        Appointment appointment = AppointmentMapper.fromCreateDto(dto, (Barber) barber, customer);
+        Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
 
         try {
             notificationService.notifyNewAppointmentRequestToCustomer(appointment);
