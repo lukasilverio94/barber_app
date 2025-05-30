@@ -30,6 +30,10 @@ import static com.barbershop.dto.mappers.AppointmentMapper.toDto;
 @RequiredArgsConstructor
 public class AppointmentService {
 
+    private static final LocalTime OPENING_TIME = LocalTime.of(8, 0);
+    private static final LocalTime CLOSING_TIME = LocalTime.of(20, 0);
+    private static final int APPOINTMENT_DURATION_MINUTES = 30;
+
     private final AppointmentRepository appointmentRepository;
     private final CustomerRepository customerRepository;
     private final NotificationService notificationService;
@@ -60,7 +64,7 @@ public class AppointmentService {
         );
 
         if (isOverlapping) {
-            throw new BarberNotAvailableException("Barber not available");
+            throw new BarberNotAvailableException("Barber not available at this time. Try again");
         }
 
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
@@ -124,8 +128,8 @@ public class AppointmentService {
 
     // helper validation appointment
     private void validateAppointmentTime(LocalTime time, LocalDate date) {
-        if (time.isBefore(LocalTime.of(8, 0)) || time.isAfter(LocalTime.of(19, 0))) {
-            throw new IllegalArgumentException("Appointments must be between 8AM and 8PM");
+        if (time.isBefore(OPENING_TIME) || time.plusMinutes(APPOINTMENT_DURATION_MINUTES).isAfter(CLOSING_TIME)) {
+            throw new IllegalArgumentException("Appointments must be between 8AM and 19:30PM");
         }
 
         if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
