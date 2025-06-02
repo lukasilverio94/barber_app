@@ -1,6 +1,7 @@
 package com.barbershop.controller;
 
 import com.barbershop.dto.BarberDTO;
+import com.barbershop.dto.mappers.BarberMapper;
 import com.barbershop.model.Barber;
 import com.barbershop.service.BarberService;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,9 @@ public class BarberController {
         return ResponseEntity.ok(barber);
     }
 
-    @GetMapping("/{barberId}/available")
-    public boolean isAvailable(
-            @PathVariable UUID barberId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime dateTime
-            ) {
-        return barberService.isBarberAvailable(barberId, dateTime);
+    @GetMapping("/{id}")
+    public ResponseEntity<BarberDTO> getBarberById(@PathVariable UUID id) {
+        Barber barber = barberService.findBarberById(id);
+        return ResponseEntity.ok(BarberMapper.toDTO(barber));
     }
 }

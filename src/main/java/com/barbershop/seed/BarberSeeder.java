@@ -1,5 +1,6 @@
 package com.barbershop.seed;
 
+import com.barbershop.enums.ServiceType;
 import com.barbershop.model.Barber;
 import com.barbershop.repository.BarberRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -31,6 +33,7 @@ public class BarberSeeder implements CommandLineRunner {
             barber.setPhone("+5515996452365");
             barber.setEmail("admin@admin.com");
             barber.setPassword(passwordEncoder.encode("admin123"));
+            barber.setServiceType(Set.of(ServiceType.HAIRCUT, ServiceType.BEARD));
             repository.save(barber);
             System.out.println("Barber Admin foi criado com sucesso!");
             System.out.println("Barber ID = " + barber.getId());
