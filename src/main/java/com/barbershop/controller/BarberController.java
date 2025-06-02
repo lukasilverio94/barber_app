@@ -5,11 +5,9 @@ import com.barbershop.dto.mappers.BarberMapper;
 import com.barbershop.model.Barber;
 import com.barbershop.service.BarberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
