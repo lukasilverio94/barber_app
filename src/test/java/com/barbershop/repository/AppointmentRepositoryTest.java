@@ -54,7 +54,7 @@ public class AppointmentRepositoryTest {
         List<Appointment> result = appointmentRepository.findByCustomerId(customer.getId());
 
         Assertions.assertThat(result).isNotEmpty();
-        Assertions.assertThat(result.get(0).getCustomer().getId()).isEqualTo(customer.getId());
+        Assertions.assertThat(result.getFirst().getCustomer().getId()).isEqualTo(customer.getId());
     }
 
     @Test
