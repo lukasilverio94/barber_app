@@ -18,10 +18,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-
 jwt:
   private:
     key: classpath:app.key
   public:
     key: classpath:app.pub
+
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID}
+  auth-token: ${TWILIO_AUTH_TOKEN}
+  phone-number: ${TWILIO_FROM_NUMBER}
