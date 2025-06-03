@@ -16,6 +16,7 @@ public class BarberFactory {
         barber.setEmail("bob" + UUID.randomUUID() + "@barbershop.com"); // ensure unique email
         barber.setPhone(generateRandomPhone());
         barber.setPassword("securepass");
+        barber.setServiceType(Set.of(ServiceType.HAIRCUT));
         return barber;
     }
 
