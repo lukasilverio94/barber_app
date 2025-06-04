@@ -16,19 +16,6 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-twilio:
-  account-sid: ${TWILIO_ACCOUNT_SID}
-  auth-token: ${TWILIO_AUTH_TOKEN}
-  phone-number: ${TWILIO_FROM_NUMBER}
-  appointment-reminder:
-    enabled: true
-    reminder-time: 30 # in minutes
-    message: "⏰ Reminder: Your appointment at {formattedTime} (in {time} minutes)"
-    time-zone: "Europe/Amsterdam"
-  sms-notification:
-    enabled: true
-    message: "✅ Appointment confirmed! We'll send a reminder 30 minutes before."
-    time-zone: "Europe/Amsterdam"
 jwt:
   private:
     key: classpath:app.key

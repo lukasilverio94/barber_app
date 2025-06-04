@@ -52,10 +52,6 @@ public class AppointmentService {
         LocalDate date = dto.date();
         LocalTime time = dto.startTime();
 
-        if (date == null) {
-            throw new IllegalArgumentException("Appointment date is required.");
-        }
-
         validateAppointmentTime(time, date);
 
         boolean isOverlapping = appointmentRepository.existsByBarberIdAndApptDayAndTimeRange(

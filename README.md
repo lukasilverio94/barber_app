@@ -1,6 +1,6 @@
 # Barbershop App   
 A backend system for managing barbers, customers, and appointments, built with Spring Boot and PostgreSQL. 
-Twilio used for real time messaging on Whatsapp after appointment is confirmed.
+Notification Email system implementing for real time information about appointments (requested, confirmed, cancelled)
 
 ## Getting Started
 1. Clone the repository: (SSH)
@@ -97,7 +97,7 @@ You can check the endpoints on: `http://localhost:8080/swagger-ui/index.html`
 - The app uses single-table inheritance for AppUser with discriminator column user_type.
 - Appointment times must be between 8:00 AM and 8:00 PM.
 - Barbers have availability set per day of the week (barber_availability table).
-- Notification service integration via Twilio (configuration under TwilioConfig.java).
+- Email notification in real time using SMTP.
 - Adjust database credentials and connection in application.yml if needed.
 - If you change entity classes, remember to update the database migration or run with ddl-auto: update cautiously.
 - Appointments last 30 minutes by default.
