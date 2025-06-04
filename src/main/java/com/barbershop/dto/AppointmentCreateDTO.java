@@ -9,9 +9,10 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 public record AppointmentCreateDTO(
-        @NotNull UUID barberId,
-        @NotNull UUID customerId,
-        @NotNull @FutureOrPresent LocalDate date,
+        @NotNull(message = "Appointment date is required") UUID barberId,
+        @NotNull(message = "Customer ID is required") UUID customerId,
+        @NotNull(message = "Date is required")
+        @FutureOrPresent(message = "Date must be today or in the future") LocalDate date,
         @NotNull LocalTime startTime,
         @NotNull  ServiceType serviceType
 ) {

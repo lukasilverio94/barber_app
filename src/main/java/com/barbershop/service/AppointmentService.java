@@ -36,7 +36,6 @@ public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final CustomerRepository customerRepository;
-    private final NotificationService notificationService;
     private final AppUserRepository appUserRepository;
 
     @Transactional
@@ -69,13 +68,6 @@ public class AppointmentService {
 
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
 
-        try {
-            notificationService.notifyNewAppointmentRequestToCustomer(appointment);
-            notificationService.notifyNewAppointmentRequestToBarber(appointment);
-        } catch (Exception ex) {
-            System.out.println("Failed to send notification for appointment " + appointment.getId());
-        }
-
         appointmentRepository.save(appointment);
         return AppointmentMapper.toDto(appointment);
     }
@@ -92,8 +84,6 @@ public class AppointmentService {
 
         appointment.setStatus(AppointmentStatus.ACCEPTED);
         appointmentRepository.save(appointment);
-
-        notificationService.notifyAppointmentAccepted(appointment);
 
         return appointment;
     }
@@ -112,8 +102,6 @@ public class AppointmentService {
 
         appointment.setStatus(AppointmentStatus.CANCELED);
         appointmentRepository.save(appointment);
-
-        notificationService.notifyAppointmentCanceled(appointment);
 
         return toDto(appointment);
     }
