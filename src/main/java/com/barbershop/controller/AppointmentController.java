@@ -5,6 +5,7 @@ import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.model.Appointment;
 import com.barbershop.service.AppointmentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class AppointmentController {
 
 
     @PostMapping
-    public ResponseEntity<AppointmentResponseDTO> createAppointment(@RequestBody AppointmentCreateDTO request) {
+    public ResponseEntity<AppointmentResponseDTO> createAppointment(@RequestBody @Valid AppointmentCreateDTO request) {
         AppointmentResponseDTO createdAppointment = appointmentService.createAppointment(request);
         return ResponseEntity.ok(createdAppointment);
     }
