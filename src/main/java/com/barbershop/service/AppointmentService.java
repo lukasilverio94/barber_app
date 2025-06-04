@@ -11,6 +11,7 @@ import com.barbershop.exception.CustomerNotFoundException;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
+import com.barbershop.model.Email;
 import com.barbershop.repository.AppUserRepository;
 import com.barbershop.repository.AppointmentRepository;
 import com.barbershop.repository.CustomerRepository;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +39,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final CustomerRepository customerRepository;
     private final AppUserRepository appUserRepository;
+    private final EmailService emailService;
 
     @Transactional
     public AppointmentResponseDTO createAppointment(AppointmentCreateDTO dto) {
@@ -65,6 +68,21 @@ public class AppointmentService {
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
 
         appointmentRepository.save(appointment);
+
+        // ✅ Format date and time
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
+        String formattedTime = time.format(DateTimeFormatter.ofPattern("hh:mm a"));
+
+        // ✅ Compose message
+        String subject = "Appointment Confirmation";
+        String body = String.format(
+                "Hello %s,\n\nYour appointment with %s is confirmed for %s at %s.\n\nThank you!",
+                customer.getName(), barber.getName(), formattedDate, formattedTime
+        );
+
+        // ✅ Send email
+        Email email = new Email(customer.getEmail(), subject, body);
+        emailService.sendSimpleEmail(email);
         return AppointmentMapper.toDto(appointment);
     }
 

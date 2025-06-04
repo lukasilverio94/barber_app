@@ -16,6 +16,16 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 465
+    username: ${MAILTRAP_USERNAME}
+    password: ${MAILTRAP_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.trust: sandbox.smtp.mailtrap.io
+      mail.debug: true
 jwt:
   private:
     key: classpath:app.key
