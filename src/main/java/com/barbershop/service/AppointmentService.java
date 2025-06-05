@@ -11,6 +11,7 @@ import com.barbershop.exception.CustomerNotFoundException;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
+import com.barbershop.model.Email;
 import com.barbershop.repository.AppUserRepository;
 import com.barbershop.repository.AppointmentRepository;
 import com.barbershop.repository.CustomerRepository;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,8 +38,8 @@ public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final CustomerRepository customerRepository;
-    private final NotificationService notificationService;
     private final AppUserRepository appUserRepository;
+    private final EmailService emailService;
 
     @Transactional
     public AppointmentResponseDTO createAppointment(AppointmentCreateDTO dto) {
@@ -53,10 +55,6 @@ public class AppointmentService {
         LocalDate date = dto.date();
         LocalTime time = dto.startTime();
 
-        if (date == null) {
-            throw new IllegalArgumentException("Appointment date is required.");
-        }
-
         validateAppointmentTime(time, date);
 
         boolean isOverlapping = appointmentRepository.existsByBarberIdAndApptDayAndTimeRange(
@@ -69,14 +67,22 @@ public class AppointmentService {
 
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
 
-        try {
-            notificationService.notifyNewAppointmentRequestToCustomer(appointment);
-            notificationService.notifyNewAppointmentRequestToBarber(appointment);
-        } catch (Exception ex) {
-            System.out.println("Failed to send notification for appointment " + appointment.getId());
-        }
-
         appointmentRepository.save(appointment);
+
+        // ✅ Format date and time
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
+        String formattedTime = time.format(DateTimeFormatter.ofPattern("hh:mm a"));
+
+        // ✅ Compose message
+        String subject = "Appointment Confirmation";
+        String body = String.format(
+                "Hello %s,\n\nYour appointment with %s is confirmed for %s at %s.\n\nThank you!",
+                customer.getName(), barber.getName(), formattedDate, formattedTime
+        );
+
+        // ✅ Send email
+        Email email = new Email(customer.getEmail(), subject, body);
+        emailService.sendSimpleEmail(email);
         return AppointmentMapper.toDto(appointment);
     }
 
@@ -92,8 +98,6 @@ public class AppointmentService {
 
         appointment.setStatus(AppointmentStatus.ACCEPTED);
         appointmentRepository.save(appointment);
-
-        notificationService.notifyAppointmentAccepted(appointment);
 
         return appointment;
     }
@@ -112,8 +116,6 @@ public class AppointmentService {
 
         appointment.setStatus(AppointmentStatus.CANCELED);
         appointmentRepository.save(appointment);
-
-        notificationService.notifyAppointmentCanceled(appointment);
 
         return toDto(appointment);
     }
