@@ -2,21 +2,17 @@ package com.barbershop.repository;
 
 import com.barbershop.factory.AppUserFactory;
 import com.barbershop.factory.BarberFactory;
+import com.barbershop.integration.AbstractPostgresContainerTest;
 import com.barbershop.model.AppUser;
 import com.barbershop.model.Barber;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
 import java.util.Optional;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-public class AppUserRepositoryTest {
+public class AppUserRepositoryTest extends AbstractPostgresContainerTest {
 
     @Autowired
     private AppUserRepository userRepository;
@@ -58,7 +54,7 @@ public class AppUserRepositoryTest {
     public void AppUserRepository_FindByEmail_ReturnUserNotNull() {
         AppUser user = AppUserFactory.createDefaultUser();
         userRepository.save(user);
-        Optional<AppUser> foundUser = userRepository.findByEmail(user.getEmail());
+        AppUser foundUser = userRepository.findByEmail(user.getEmail()).get();
 
         Assertions.assertThat(foundUser).isNotNull();
 
