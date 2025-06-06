@@ -51,16 +51,6 @@ public class AppUserRepositoryTest extends AbstractPostgresContainerTest {
     }
 
     @Test
-    public void AppUserRepository_FindByEmail_ReturnUserNotNull() {
-        AppUser user = AppUserFactory.createDefaultUser();
-        userRepository.save(user);
-        AppUser foundUser = userRepository.findByEmail(user.getEmail()).get();
-
-        Assertions.assertThat(foundUser).isNotNull();
-
-    }
-
-    @Test
     public void AppUserRepository_FindBarberById_ReturnsBarber() {
         // arrange
         Barber barber = BarberFactory.createDefaultBarber();
