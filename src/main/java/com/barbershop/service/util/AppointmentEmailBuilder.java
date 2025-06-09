@@ -15,10 +15,33 @@ public class AppointmentEmailBuilder {
 
     public static Email buildConfirmationEmail(Customer customer, Barber barber, LocalDate date, LocalTime time) {
         String subject = "Appointment Confirmation";
+
+        LocalTime endTime = time.plusMinutes(30);
+
+        String googleCalendarLink = CalendarLinkGenerator.generateGoogleCalendarLink(
+                "Barbershop Appointment with " + barber.getName(),
+                "Haircut appointment at the barbershop",
+                "123 Barber St, YourCity", // Replace with your actual location or leave dynamic
+                date,
+                time,
+                endTime
+        );
+
         String body = String.format(
-                "Hello %s,\n\nYour appointment with %s is confirmed for %s at %s.\n\nThank you!",
-                customer.getName(), barber.getName(),
-                date.format(DATE_FORMATTER), time.format(TIME_FORMATTER)
+                """
+                        Hello %s,
+                        
+                        Your appointment with %s is confirmed for %s at %s.
+                        
+                        You can add this to your calendar by clicking the link below:
+                        %s
+                        
+                        Thank you!""",
+                customer.getName(),
+                barber.getName(),
+                date.format(DATE_FORMATTER),
+                time.format(TIME_FORMATTER),
+                googleCalendarLink
         );
         return new Email(customer.getEmail(), subject, body);
     }

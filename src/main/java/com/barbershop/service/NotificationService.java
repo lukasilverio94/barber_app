@@ -23,6 +23,7 @@ public class NotificationService {
         emailService.sendSimpleEmail(
                 AppointmentEmailBuilder.buildConfirmationEmail(customer, barber, date, time)
         );
+
     }
 
     @Async
