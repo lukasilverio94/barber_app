@@ -3,6 +3,7 @@ package com.barbershop.controller;
 import com.barbershop.dto.CustomerCreateDTO;
 import com.barbershop.dto.CustomerDTO;
 import com.barbershop.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerCreateDTO dto) {
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody @Valid  CustomerCreateDTO dto) {
         CustomerDTO newCustomer = customerService.createCustomer(dto);
         URI location = URI.create("/customers/" + newCustomer.id());
         return ResponseEntity.created(location).body(newCustomer);
