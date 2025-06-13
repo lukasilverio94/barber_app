@@ -3,6 +3,7 @@ package com.barbershop.service;
 import com.barbershop.BarberappApplication;
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentResponseDTO;
+import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.enums.ServiceType;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
@@ -77,4 +78,21 @@ public class AppointmentServiceIntegrationTest extends PostgresContainerTest {
         assertEquals(dto.startTime(), response.startTime());
 
     }
+
+    @Test
+    void acceptAppointment_shouldUpdateStatus() {
+        var dto = new AppointmentCreateDTO(
+                testBarber.getId(),
+                testCustomer.getId(),
+                LocalDate.now().plusDays(1),
+                LocalTime.of(11, 0),
+                ServiceType.BEARD
+        );
+
+        var response = appointmentService.createAppointment(dto);
+        var accepted = appointmentService.acceptAppointment(response.id());
+
+        assertEquals(AppointmentStatus.ACCEPTED, accepted.getStatus());
+    }
+
 }
