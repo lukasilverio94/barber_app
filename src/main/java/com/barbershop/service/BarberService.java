@@ -22,7 +22,7 @@ public class BarberService {
             return barberRepository.save(barber);
     }
 
-    public Barber findBarberById(UUID id) {
+    public Barber findBarberByIdOrThrow(UUID id) {
         return barberRepository.findById(id)
                 .orElseThrow(() -> new BarberNotFoundException(id));
     }

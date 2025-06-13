@@ -3,6 +3,7 @@ package com.barbershop.service;
 import com.barbershop.dto.CustomerCreateDTO;
 import com.barbershop.dto.CustomerDTO;
 import com.barbershop.dto.mappers.CustomerMapper;
+import com.barbershop.exception.CustomerNotFoundException;
 import com.barbershop.exception.EmailAlreadyExistsException;
 import com.barbershop.model.Customer;
 import com.barbershop.repository.CustomerRepository;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CustomerService {
@@ -22,6 +24,11 @@ public class CustomerService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public Customer findCustomerByIdOrThrow(UUID id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
+    }
+    
     public List<CustomerDTO> getAllCustomers() {
         return customerRepository.findAll()
                 .stream().map(CustomerMapper::toDto)
