@@ -2,17 +2,19 @@ package com.barbershop.repository;
 
 import com.barbershop.factory.AppUserFactory;
 import com.barbershop.factory.BarberFactory;
-import com.barbershop.integration.AbstractPostgresContainerTest;
+import com.barbershop.utils.PostgresContainerTest;
 import com.barbershop.model.AppUser;
 import com.barbershop.model.Barber;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
 
-public class AppUserRepositoryTest extends AbstractPostgresContainerTest {
+@SpringBootTest
+public class AppUserRepositoryTest extends PostgresContainerTest {
 
     @Autowired
     private AppUserRepository userRepository;

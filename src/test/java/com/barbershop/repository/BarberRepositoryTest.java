@@ -2,18 +2,19 @@ package com.barbershop.repository;
 
 import com.barbershop.enums.ServiceType;
 import com.barbershop.factory.BarberFactory;
-import com.barbershop.integration.AbstractPostgresContainerTest;
+import com.barbershop.utils.PostgresContainerTest;
 import com.barbershop.model.Barber;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-
-public class BarberRepositoryTest extends AbstractPostgresContainerTest {
+@SpringBootTest
+public class BarberRepositoryTest extends PostgresContainerTest {
 
     @Autowired
     private BarberRepository barberRepository;
