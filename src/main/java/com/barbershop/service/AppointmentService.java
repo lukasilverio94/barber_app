@@ -28,8 +28,8 @@ import static com.barbershop.dto.mappers.AppointmentMapper.toDto;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final CustomerRepository customerRepository;
-    private final AppUserRepository appUserRepository;
+    private final CustomerService customerService;
+    private final BarberService barberService;
     private final AppointmentValidator appointmentValidator;
     private final NotificationService notificationService;
 
@@ -38,11 +38,8 @@ public class AppointmentService {
         UUID customerId = UUID.fromString(dto.customerId().toString());
         UUID barberId = UUID.fromString(dto.barberId().toString());
 
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(customerId));
-
-        Barber barber = appUserRepository.findBarberById(barberId)
-                .orElseThrow(() -> new BarberNotFoundException(barberId));
+        Customer customer = customerService.findCustomerByIdOrThrow(customerId);
+        Barber barber = barberService.findBarberByIdOrThrow(barberId);
 
         LocalDate appointmentDate = dto.date();
         LocalTime appointmentTime = dto.startTime();
