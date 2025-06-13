@@ -6,9 +6,7 @@ import com.barbershop.exception.OutsideBusinessHoursException;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
-import com.barbershop.repository.AppUserRepository;
 import com.barbershop.repository.AppointmentRepository;
-import com.barbershop.repository.CustomerRepository;
 import com.barbershop.validation.AppointmentValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,9 +31,9 @@ public class AppointmentServiceTest {
     @Mock
     AppointmentRepository appointmentRepository;
     @Mock
-    CustomerRepository customerRepository;
+    CustomerService customerService;
     @Mock
-    AppUserRepository appUserRepository;
+    BarberService barberService;
     @Mock
     AppointmentValidator appointmentValidator;
     @Mock
@@ -64,8 +61,8 @@ public class AppointmentServiceTest {
         appointment.setApptDay(dto.date());
         appointment.setServiceType(dto.serviceType());
 
-        when(this.customerRepository.findById(dto.customerId())).thenReturn(Optional.of(customer));
-        when(this.appUserRepository.findBarberById(dto.barberId())).thenReturn(Optional.of(barber));
+        when(this.customerService.findCustomerByIdOrThrow(dto.customerId())).thenReturn(customer);
+        when(this.barberService.findBarberByIdOrThrow(dto.barberId())).thenReturn(barber);
         when(this.appointmentValidator.isWhithinBusinessHours(dto.startTime(), dto.date())).thenReturn(true);
         doNothing().when(this.appointmentValidator).validateBarberAvailability(dto.barberId(), dto.date(), dto.startTime());
         when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
@@ -86,8 +83,8 @@ public class AppointmentServiceTest {
     void createAppointmentShouldThrowWhenOutsideBusinessHours() {
         var dto = new AppointmentCreateDTO(UUID.randomUUID(), UUID.randomUUID(), LocalDate.now(), LocalTime.of(23, 0), ServiceType.HAIRCUT);
 
-        when(customerRepository.findById(dto.customerId())).thenReturn(Optional.of(new Customer()));
-        when(appUserRepository.findBarberById(dto.barberId())).thenReturn(Optional.of(new Barber()));
+        when(customerService.findCustomerByIdOrThrow(dto.customerId())).thenReturn(new Customer());
+        when(barberService.findBarberByIdOrThrow(dto.barberId())).thenReturn(new Barber());
         when(appointmentValidator.isWhithinBusinessHours(dto.startTime(), dto.date())).thenReturn(false);
 
         assertThrows(OutsideBusinessHoursException.class, () -> appointmentService.createAppointment(dto));
