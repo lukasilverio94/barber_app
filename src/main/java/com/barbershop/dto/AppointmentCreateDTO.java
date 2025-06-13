@@ -16,7 +16,8 @@ public record AppointmentCreateDTO(
         UUID customerId,
 
         @NotNull(message = "Date is required")
-        @FutureOrPresent(message = "Date must be today or in the future") LocalDate date,
+        @FutureOrPresent(message = "Date must be today or in the future")
+        LocalDate date,
 
         @NotNull(message = "Start time is required")
         LocalTime startTime,
