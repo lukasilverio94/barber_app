@@ -31,7 +31,7 @@ public class JwtService {
 
         // get the authenticated user
         UserAuthenticated userAuthenticated = (UserAuthenticated) authentication.getPrincipal();
-        AppUser user = userAuthenticated.getUser();
+        AppUser user = userAuthenticated.user();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("spring-security-jwt")

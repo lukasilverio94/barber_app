@@ -39,6 +39,13 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        final String BARBERS_API = "/api/barbers";
+        final String CUSTOMERS_API = "/api/customers";
+        final String APPOINTMENTS_API = "/api/appointments";
+        final String BARBER_ROLE = "BARBER";
+        final String CUSTOMER_ROLE = "CUSTOMER";
+
         http.csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(
@@ -47,14 +54,18 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
                                 // public endpoints
-                                .requestMatchers(HttpMethod.POST, "/api/customers").permitAll()
+                                .requestMatchers(HttpMethod.POST, CUSTOMERS_API).permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
 
                                 // restricted endpoints
-                                .requestMatchers(HttpMethod.POST, "/api/barbers").hasRole("BARBER")
-                                .requestMatchers(HttpMethod.PUT, "/api/barbers").hasRole("BARBER")
-                                .requestMatchers(HttpMethod.DELETE, "/api/barbers").hasRole("BARBER")
-                                .requestMatchers(HttpMethod.POST, "/api/appointments").hasRole("CUSTOMER")
+                                .requestMatchers(HttpMethod.POST, BARBERS_API).hasRole(BARBER_ROLE)
+                                .requestMatchers(HttpMethod.PUT, BARBERS_API).hasRole(BARBER_ROLE)
+                                .requestMatchers(HttpMethod.GET, CUSTOMERS_API).hasRole(BARBER_ROLE)
+                                .requestMatchers(HttpMethod.DELETE, BARBERS_API).hasRole(BARBER_ROLE)
+                                .requestMatchers(HttpMethod.PUT, BARBERS_API).hasRole(BARBER_ROLE)
+                                .requestMatchers(HttpMethod.PATCH, BARBERS_API).hasRole(BARBER_ROLE)
+                                .requestMatchers(HttpMethod.POST, APPOINTMENTS_API).hasRole(CUSTOMER_ROLE)
+                                .requestMatchers(HttpMethod.GET, APPOINTMENTS_API).hasRole(BARBER_ROLE)
 
                                 // any other request must be authenticated
                                 .anyRequest().authenticated()

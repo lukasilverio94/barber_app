@@ -1,17 +1,21 @@
 package com.barbershop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
-import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @DiscriminatorValue(value = "CUSTOMER")
 public class Customer extends AppUser {
 
@@ -19,12 +23,4 @@ public class Customer extends AppUser {
     @JsonIgnore
     private List<Appointment> appointments;
 
-    public Customer(UUID id, String name, String phone, String email, String password, List<Appointment> appointments) {
-        super(id, name, phone, email, password);
-        this.appointments = appointments;
-    }
-
-    public Customer() {
-
-    }
 }

@@ -33,7 +33,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-    @PutMapping("/{id}/accept")
+    @PatchMapping("/{id}/accept")
     public ResponseEntity<AppointmentResponseDTO> acceptAppointment(@PathVariable UUID id) {
         Appointment accepted = appointmentService.acceptAppointment(id);
         return ResponseEntity.ok(AppointmentMapper.toDto(accepted));

@@ -3,14 +3,20 @@ package com.barbershop.model;
 import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.enums.ServiceType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity(name = "appointment")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(exclude = {"barber", "customer"})
 public class Appointment {
 
     @Id
