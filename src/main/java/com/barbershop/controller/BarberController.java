@@ -26,7 +26,7 @@ public class BarberController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BarberDTO> getBarberById(@PathVariable UUID id) {
-        Barber barber = barberService.findBarberById(id);
+        Barber barber = barberService.findBarberByIdOrThrow(id);
         return ResponseEntity.ok(BarberMapper.toDTO(barber));
     }
 }
