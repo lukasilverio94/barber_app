@@ -3,6 +3,7 @@ package com.barbershop.exception.common;
 import com.barbershop.exception.AppointmentNotFoundException;
 import com.barbershop.exception.BarberNotAvailableException;
 import com.barbershop.exception.EmailAlreadyExistsException;
+import com.barbershop.exception.OutsideBusinessHoursException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -47,6 +48,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BarberNotAvailableException.class)
     public ResponseEntity<Object> handleBarberNotAvailable(BarberNotAvailableException ex) {
         return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(OutsideBusinessHoursException.class)
+    public ResponseEntity<Object> handleOutsideBusinessHoursException(OutsideBusinessHoursException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(AppointmentNotFoundException.class)
