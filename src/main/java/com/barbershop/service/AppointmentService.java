@@ -4,9 +4,7 @@ import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.enums.AppointmentStatus;
-import com.barbershop.exception.AppointmentNotFoundException;
-import com.barbershop.exception.BarberNotFoundException;
-import com.barbershop.exception.CustomerNotFoundException;
+import com.barbershop.exception.*;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
@@ -49,14 +47,17 @@ public class AppointmentService {
         LocalDate appointmentDate = dto.date();
         LocalTime appointmentTime = dto.startTime();
 
-        appointmentValidator.validateTimeWithinBusinessHours(appointmentTime, appointmentDate);
+        var isDateTimeValid = appointmentValidator.isWhithinBusinessHours(appointmentTime, appointmentDate);
+
+        if (!isDateTimeValid) {
+            throw new OutsideBusinessHoursException(appointmentTime, appointmentDate);
+        }
+
         appointmentValidator.validateBarberAvailability(barberId, appointmentDate, appointmentTime);
 
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
 
-        appointmentRepository.save(appointment);
-
-        return AppointmentMapper.toDto(appointment);
+        return AppointmentMapper.toDto(appointmentRepository.save(appointment));
     }
 
     @Transactional
