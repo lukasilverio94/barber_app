@@ -1,6 +1,7 @@
-package com.barbershop.security;
+package com.barbershop.service;
 
 import com.barbershop.model.AppUser;
+import com.barbershop.security.UserAuthenticated;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
