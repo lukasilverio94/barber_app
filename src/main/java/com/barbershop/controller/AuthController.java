@@ -3,7 +3,7 @@ package com.barbershop.controller;
 import com.barbershop.dto.LoginRequestDTO;
 import com.barbershop.model.AppUser;
 import com.barbershop.repository.AppUserRepository;
-import com.barbershop.security.AuthenticationService;
+import com.barbershop.service.AuthenticationService;
 import com.barbershop.security.UserAuthenticated;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

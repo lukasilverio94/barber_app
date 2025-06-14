@@ -1,4 +1,4 @@
-package com.barbershop.security;
+package com.barbershop.service;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

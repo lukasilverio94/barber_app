@@ -7,7 +7,6 @@ import com.barbershop.exception.CustomerNotFoundException;
 import com.barbershop.exception.EmailAlreadyExistsException;
 import com.barbershop.model.Customer;
 import com.barbershop.repository.CustomerRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +35,6 @@ public class CustomerService {
                 .toList();
     }
 
-    @Transactional
     public CustomerDTO createCustomer(CustomerCreateDTO dto) {
         if(customerRepository.existsByEmail(dto.email())) {
             throw new EmailAlreadyExistsException("Email already in use");
