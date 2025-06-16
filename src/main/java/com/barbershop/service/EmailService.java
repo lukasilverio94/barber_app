@@ -3,6 +3,7 @@ package com.barbershop.service;
 import com.barbershop.model.Email;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,5 +22,10 @@ public class EmailService{
         message.setSubject(email.subject());
         message.setText(email.body());
         mailSender.send(message);
+    }
+
+    @Async
+    public void sendSimpleEmailAsync(Email email) {
+        sendSimpleEmail(email);
     }
 }

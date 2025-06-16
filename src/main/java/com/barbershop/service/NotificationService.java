@@ -20,7 +20,7 @@ public class NotificationService {
 
     @Async
     public void sendAppointmentConfirmation(Customer customer, Barber barber, LocalDate date, LocalTime time) {
-        emailService.sendSimpleEmail(
+        emailService.sendSimpleEmailAsync(
                 AppointmentEmailBuilder.buildConfirmationEmail(customer, barber, date, time)
         );
 
@@ -28,7 +28,7 @@ public class NotificationService {
 
     @Async
     public void sendAppointmentCancellation(Customer customer, Barber barber, LocalDate date, LocalTime time) {
-        emailService.sendSimpleEmail(
+        emailService.sendSimpleEmailAsync(
                 AppointmentEmailBuilder.buildCancellationEmail(customer, barber, date, time)
         );
     }
