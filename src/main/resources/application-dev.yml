@@ -31,3 +31,6 @@ jwt:
     key: classpath:app.key
   public:
     key: classpath:app.pub
+frontend:
+  reset-password:
+    url: https://localhost:5173/reset-password
