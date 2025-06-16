@@ -46,4 +46,7 @@ public class CustomerService {
         return CustomerMapper.toDto(savedCustomer);
     }
 
+    public Customer findUserByEmailOrThrow(String email) {
+        return customerRepository.findCustomerByEmail(email);
+    }
 }
