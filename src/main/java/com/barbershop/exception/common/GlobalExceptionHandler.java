@@ -1,9 +1,6 @@
 package com.barbershop.exception.common;
 
-import com.barbershop.exception.AppointmentNotFoundException;
-import com.barbershop.exception.BarberNotAvailableException;
-import com.barbershop.exception.EmailAlreadyExistsException;
-import com.barbershop.exception.OutsideBusinessHoursException;
+import com.barbershop.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -58,6 +55,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AppointmentNotFoundException.class)
     public ResponseEntity<Object> handleAppointmentNotFound(AppointmentNotFoundException ex) {
         return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidResetTokenException.class)
+    public ResponseEntity<Object> handleInvalidResetTokenException(InvalidResetTokenException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredResetTokenException.class)
+    public ResponseEntity<Object> handleExpiredResetTokenException(InvalidResetTokenException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)

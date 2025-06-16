@@ -76,7 +76,6 @@ public class AppointmentService {
         return appointment;
     }
 
-    @Transactional
     public List<AppointmentResponseDTO> getAppointmentsByCustomer(UUID customerId) {
         return appointmentRepository.findByCustomerId(customerId).stream()
                 .map(AppointmentMapper::toDto)
