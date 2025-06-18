@@ -1,6 +1,9 @@
 package com.barbershop.exception.common;
 
 import com.barbershop.exception.*;
+import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +18,8 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /*
     Build the response entity to reuse in all other methods that handles exception
@@ -52,19 +57,21 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(AppointmentNotFoundException.class)
-    public ResponseEntity<Object> handleAppointmentNotFound(AppointmentNotFoundException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
 
     @ExceptionHandler(InvalidResetTokenException.class)
     public ResponseEntity<Object> handleInvalidResetTokenException(InvalidResetTokenException ex) {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+
     @ExceptionHandler(ExpiredResetTokenException.class)
-    public ResponseEntity<Object> handleExpiredResetTokenException(InvalidResetTokenException ex) {
+    public ResponseEntity<Object> handleExpiredResetTokenException(ExpiredResetTokenException ex) {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -74,6 +81,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGenericException(Exception ex) {
+        logger.error("Unhandled exception: ", ex);
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
