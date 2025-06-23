@@ -60,6 +60,7 @@ public class SecurityConfig {
                                 // restricted endpoints
                                 .requestMatchers(HttpMethod.POST, BARBERS_API).hasRole(BARBER_ROLE)
                                 .requestMatchers(HttpMethod.PUT, BARBERS_API).hasRole(BARBER_ROLE)
+                                .requestMatchers(HttpMethod.GET, BARBERS_API).hasRole(BARBER_ROLE)
                                 .requestMatchers(HttpMethod.GET, CUSTOMERS_API).hasRole(BARBER_ROLE)
                                 .requestMatchers(HttpMethod.DELETE, BARBERS_API).hasRole(BARBER_ROLE)
                                 .requestMatchers(HttpMethod.PUT, BARBERS_API).hasRole(BARBER_ROLE)
