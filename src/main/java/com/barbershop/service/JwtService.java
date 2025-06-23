@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +41,7 @@ public class JwtService {
                 .expiresAt(now.plusSeconds(expiry))
                 .subject(authentication.getName())
                 .claim("scope", scope)
-                .claim("roles", user.getUserType())
+                .claim("roles", List.of(user.getUserType()))
                 .claim("userId", user.getId())
                 .build();
 
