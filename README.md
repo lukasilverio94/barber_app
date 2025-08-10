@@ -16,18 +16,30 @@ cd barber_app
 
 ## Project structure
 
-```
-lukasilverio94-barber_app/
-├── docker-compose.yaml        # Docker Compose to run Postgres DB
-├── pom.xml                   # Maven build file
-├── src/
-│   ├── main/
-│   │   ├── java/com/barbershop/  # Java source code packages (controller, service, model, repository, security, etc.)
-│   │   └── resources/
-│   │       ├── application.yml   # Main Spring Boot config
-│   │       └── db/migration/     # Database migration scripts
-└── .mvn/                       # Maven wrapper files
-```
+The application follows a layered architecture:
+
+**Controllers**: Handle HTTP requests and responses
+
+**Services**: Services: Contain business logic 
+
+**Repositories**: Handle data access operations
+
+**DTOs**: Data transfer objects for API contracts
+
+**Models (Entities)**: Domain models mapped to database tables
+
+**Exceptions**: Custom exception handling
+
+**Security**: Authentication and authorization configuration
+
+**Validation**: Validators logic
+
+## ✨Features
+- JWT Authentication (Spring Security) -> Uses email/password to log in
+- Role-based Access(CUSTOMER, BARBER)
+- Appointment creation and management by Customers and Barbers
+- Email Notification System after appointment is created and confirmed
+- CRUD Operations for Barber and Customers 
 
 ## Database Setup
 
@@ -43,29 +55,6 @@ Database name: barberapp
 Username: postgres
 Password: postgres
 
-## Manual Local setup (if not using Docker)
-1. Install PostgreSQL(Version 12 or newer recommended)
-2. Create database:
-
-```sql
-CREATE DATABASE barberapp;
-CREATE TYPE user_type AS ENUM ('BARBER', 'CUSTOMER');
-
--- Run migration scripts located in src/main/resources/db/migration/V1__database-init.sql
-
-```
-3. Set the following connection details in application.yml or application-dev.yml:
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/barberapp
-    username: postgres
-    password: postgres
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-```
 
 ## Running the app:
 
