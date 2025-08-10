@@ -77,7 +77,7 @@ public class AppointmentService {
     }
 
     public List<AppointmentResponseDTO> getAppointmentsByCustomer(UUID customerId) {
-        return appointmentRepository.findByCustomerId(customerId).stream()
+        return appointmentRepository.findByCustomerIdFetchCustomer(customerId).stream()
                 .map(AppointmentMapper::toDto)
                 .toList();
     }

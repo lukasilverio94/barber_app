@@ -42,14 +42,14 @@ public class AppointmentRepositoryTest extends PostgresContainerTest {
     }
 
     @Test
-    public void AppointmentRepository_FindByCustomerId_ReturnsAppointments() {
+    public void AppointmentRepository_FindByCustomerId_FetchCustomer_ReturnsAppointments() {
         Customer customer = customerRepository.save(CustomerFactory.createDefaultCustomer());
         Barber barber = barberRepository.save(BarberFactory.createDefaultBarber());
 
         Appointment appointment = AppointmentFactory.createDefaultAppointment(barber, customer);
         appointmentRepository.save(appointment);
 
-        List<Appointment> result = appointmentRepository.findByCustomerId(customer.getId());
+        List<Appointment> result = appointmentRepository.findByCustomerIdFetchCustomer(customer.getId());
 
         Assertions.assertThat(result).isNotEmpty();
         Assertions.assertThat(result.getFirst().getCustomer().getId()).isEqualTo(customer.getId());
