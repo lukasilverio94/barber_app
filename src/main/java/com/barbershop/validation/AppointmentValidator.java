@@ -3,6 +3,7 @@ package com.barbershop.validation;
 
 import com.barbershop.exception.BarberNotAvailableException;
 import com.barbershop.repository.AppointmentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class AppointmentValidator {
 
     private final AppointmentRepository appointmentRepository;
@@ -35,6 +37,7 @@ public class AppointmentValidator {
         );
 
         if (isOverlapping) {
+            log.error("Someone tried to make appointment with unavailable barber");
             throw new BarberNotAvailableException("Barber not available at this time. Try again");
         }
     }
