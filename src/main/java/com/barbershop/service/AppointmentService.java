@@ -34,12 +34,8 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentResponseDTO createAppointment(AppointmentCreateDTO dto) {
-        UUID customerId = UUID.fromString(dto.customerId().toString());
-        UUID barberId = UUID.fromString(dto.barberId().toString());
-
-        Customer customer = customerService.findCustomerByIdOrThrow(customerId);
-        Barber barber = barberService.findBarberByIdOrThrow(barberId);
-
+        Customer customer = customerService.findCustomerByIdOrThrow(dto.customerId());
+        Barber barber = barberService.findBarberByIdOrThrow(dto.barberId());
         LocalDate appointmentDate = dto.date();
         LocalTime appointmentTime = dto.startTime();
 
@@ -49,7 +45,7 @@ public class AppointmentService {
             throw new OutsideBusinessHoursException(appointmentTime, appointmentDate);
         }
 
-        appointmentValidator.validateBarberAvailability(barberId, appointmentDate, appointmentTime);
+        appointmentValidator.validateBarberAvailability(barber.getId(), appointmentDate, appointmentTime);
 
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
 
