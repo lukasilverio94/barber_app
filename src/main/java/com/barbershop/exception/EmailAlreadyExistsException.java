@@ -1,7 +1,12 @@
 package com.barbershop.exception;
 
-public class EmailAlreadyExistsException extends RuntimeException {
-    public EmailAlreadyExistsException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class EmailAlreadyExistsException extends BusinessException {
+    private static final String CODE = "CUST-002";
+
+    public EmailAlreadyExistsException(String email) {
+        super("Email already registered: " + email, CODE, HttpStatus.CONFLICT);
     }
 }
+

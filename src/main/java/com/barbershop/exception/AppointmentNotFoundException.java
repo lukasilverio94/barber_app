@@ -5,8 +5,11 @@ import com.barbershop.exception.common.NotFoundException;
 import java.util.UUID;
 
 public class AppointmentNotFoundException extends NotFoundException {
+    private static final String CODE = "APPT-001";
+
+
     public AppointmentNotFoundException(UUID id) {
-        super("Appointment not found with id " + id);
+        super("Appointment not found with id " + id, CODE);
     }
 }
 

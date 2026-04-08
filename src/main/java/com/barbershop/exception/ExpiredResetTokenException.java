@@ -1,7 +1,11 @@
 package com.barbershop.exception;
 
-public class ExpiredResetTokenException extends RuntimeException {
-    public ExpiredResetTokenException(String message) {
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class ExpiredResetTokenException extends BusinessException {
+    private static final String CODE = "AUTH-002";
+
+    public ExpiredResetTokenException() {
+        super("Reset token has expired", CODE, HttpStatus.BAD_REQUEST);
     }
 }

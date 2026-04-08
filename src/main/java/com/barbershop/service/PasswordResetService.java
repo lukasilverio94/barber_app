@@ -61,10 +61,10 @@ public class PasswordResetService {
     @Transactional
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new InvalidResetTokenException("Reset token is invalid or has already been used"));
+                .orElseThrow(InvalidResetTokenException::new);
 
         if (resetToken.getExpiryDate().isBefore(Instant.now())) {
-            throw new ExpiredResetTokenException("Token has expired. Please request a new password reset");
+            throw new ExpiredResetTokenException();
         }
 
         Customer user = resetToken.getUser();

@@ -1,7 +1,11 @@
 package com.barbershop.exception;
 
-public class BarberNotAvailableException extends RuntimeException {
-  public BarberNotAvailableException(String message) {
-    super(message);
-  }
+import org.springframework.http.HttpStatus;
+
+public class BarberNotAvailableException extends BusinessException {
+    private static final String CODE = "BARB-002";
+
+    public BarberNotAvailableException(String message) {
+        super(message, CODE, HttpStatus.CONFLICT);
+    }
 }

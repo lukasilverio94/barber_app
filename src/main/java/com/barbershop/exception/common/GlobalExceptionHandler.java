@@ -1,9 +1,7 @@
 package com.barbershop.exception.common;
 
 import com.barbershop.exception.*;
-import jakarta.persistence.EntityNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,97 +9,76 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
+        log.warn("Business exception: {} - {}", ex.getCode(), ex.getMessage());
 
-    /*
-    Build the response entity to reuse in all other methods that handles exception
-     */
-    public ResponseEntity<Object> buildResponseEntity(HttpStatus status, String message) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
-        body.put("message", message);
-        return new ResponseEntity<>(body, status);
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                ex.getStatus().value(),
+                ex.getStatus().getReasonPhrase(),
+                ex.getCode(),
+                ex.getMessage()
+        );
+
+        return new ResponseEntity<>(response, ex.getStatus());
     }
 
-    /*
-    Handle exceptions
-    Last method should handle 500 (INTERNAL SERVER ERROR)
-     */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
-
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<Object> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
-        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage());
-    }
-
-    @ExceptionHandler(BarberNotAvailableException.class)
-    public ResponseEntity<Object> handleBarberNotAvailable(BarberNotAvailableException ex) {
-        return buildResponseEntity(HttpStatus.CONFLICT, ex.getMessage());
-    }
-
-    @ExceptionHandler(OutsideBusinessHoursException.class)
-    public ResponseEntity<Object> handleOutsideBusinessHoursException(OutsideBusinessHoursException ex) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
-
-    @ExceptionHandler(InvalidResetTokenException.class)
-    public ResponseEntity<Object> handleInvalidResetTokenException(InvalidResetTokenException ex) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
-
-    @ExceptionHandler(ExpiredResetTokenException.class)
-    public ResponseEntity<Object> handleExpiredResetTokenException(ExpiredResetTokenException ex) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleNotFound(NotFoundException ex) {
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGenericException(Exception ex) {
-        logger.error("Unhandled exception: ", ex);
-        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-    }
-
-    // validaiton exceptions
+    // validation errors
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        List<String> errors = ex.getBindingResult()
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+        List<String> details = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-                .collect(Collectors.toList());
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .toList();
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
-        body.put("message", "Validation failed");
-        body.put("details", errors);
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation Failed",
+                "VAL-001",
+                "Invalid request parameters",
+                details
+        );
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(response);
     }
 
+    //  unexpected errors
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        log.error("Unexpected error: ", ex);
+
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "SYS-001",
+                "An unexpected error occurred"
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    // consistent json structure
+    public record ErrorResponse(
+            LocalDateTime timestamp,
+            int status,
+            String error,
+            String code,      // Machine-readable code
+            String message,   // Human-readable message
+            List<String> details
+    ) {
+        public ErrorResponse(LocalDateTime timestamp, int status, String error,
+                             String code, String message) {
+            this(timestamp, status, error, code, message, null);
+        }
+    }
 }
