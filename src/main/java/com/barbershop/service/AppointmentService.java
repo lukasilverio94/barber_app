@@ -5,6 +5,7 @@ import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
 import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.exception.AppointmentNotFoundException;
+import com.barbershop.exception.InvalidAppointmentStateException;
 import com.barbershop.exception.OutsideBusinessHoursException;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
@@ -58,7 +59,7 @@ public class AppointmentService {
                 .orElseThrow(() -> new AppointmentNotFoundException(id));
 
         if (appointment.getStatus() == AppointmentStatus.ACCEPTED) {
-            throw new IllegalStateException("Appointment is already accepted");
+            throw new InvalidAppointmentStateException("Appointment is already accepted");
         }
         appointment.setStatus(AppointmentStatus.ACCEPTED);
         appointmentRepository.save(appointment);
