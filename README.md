@@ -3,7 +3,7 @@ A backend system for managing barbers, customers, and appointments, built with S
 Notification Email system implementing for real time information about appointments (requested, confirmed, cancelled)
 
 ## Getting Started
-1. Clone the repository: (SSH)
+1. Clone the repository:
 ```
 git clone git@github.com:lukasilverio94/barber_app.git
 cd barber_app
@@ -34,7 +34,7 @@ The application follows a layered architecture:
 
 **Validation**: Validators logic
 
-## ✨Features
+## Features
 - JWT Authentication (Spring Security) -> Uses email/password to log in
 - Role-based Access(CUSTOMER, BARBER)
 - Appointment creation and management by Customers and Barbers
