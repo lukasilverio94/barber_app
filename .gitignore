@@ -36,3 +36,6 @@ build/
 src/main/resources/*.key
 src/main/resources/*.pub
 
+## keys
+src/test/resources/*.key
+src/test/resources/*.pub
