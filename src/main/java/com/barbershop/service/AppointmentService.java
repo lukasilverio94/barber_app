@@ -3,6 +3,7 @@ package com.barbershop.service;
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.dto.AppointmentResponseDTO;
 import com.barbershop.dto.mappers.AppointmentMapper;
+import com.barbershop.enums.AppointmentEvent;
 import com.barbershop.enums.AppointmentStatus;
 import com.barbershop.exception.AppointmentNotFoundException;
 import com.barbershop.exception.InvalidAppointmentStateException;
@@ -14,6 +15,7 @@ import com.barbershop.repository.AppointmentRepository;
 import com.barbershop.validation.AppointmentValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import java.util.UUID;
 
 import static com.barbershop.dto.mappers.AppointmentMapper.toDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AppointmentService {
@@ -40,17 +43,19 @@ public class AppointmentService {
         LocalDate appointmentDate = dto.date();
         LocalTime appointmentTime = dto.startTime();
 
-        var isDateTimeValid = appointmentValidator.isWhithinBusinessHours(appointmentTime, appointmentDate);
-
-        if (!isDateTimeValid) {
-            throw new OutsideBusinessHoursException(appointmentTime, appointmentDate);
-        }
-
+        appointmentValidator.isWhithinBusinessHoursOrThrow(appointmentTime, appointmentDate);
         appointmentValidator.validateBarberAvailability(barber.getId(), appointmentDate, appointmentTime);
 
         Appointment appointment = AppointmentMapper.fromCreateDto(dto, barber, customer);
-
-        return AppointmentMapper.toDto(appointmentRepository.save(appointment));
+        var saved = appointmentRepository.save(appointment);
+        log.info("APPOINTMENT_EVENT={} | id={} | barberId={} | customerId={} | date={} | time={}",
+                AppointmentEvent.CREATED,
+                saved.getId(),
+                saved.getBarber().getId(),
+                saved.getCustomer().getId(),
+                saved.getApptDay(),
+                saved.getStartTime());
+        return AppointmentMapper.toDto(appointmentRepository.save(saved));
     }
 
     @Transactional
@@ -63,6 +68,11 @@ public class AppointmentService {
         }
         appointment.setStatus(AppointmentStatus.ACCEPTED);
         appointmentRepository.save(appointment);
+        log.info("APPOINTMENT_EVENT={} | id={} | barberId={} | customerId={}",
+                AppointmentEvent.ACCEPTED,
+                appointment.getId(),
+                appointment.getBarber().getId(),
+                appointment.getCustomer().getId());
 
         notificationService.sendAppointmentConfirmation(
                 appointment.getCustomer(),
@@ -82,10 +92,17 @@ public class AppointmentService {
     @Transactional
     public AppointmentResponseDTO cancelAppointment(UUID id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+                .orElseThrow(() -> new AppointmentNotFoundException(id));
 
         appointment.setStatus(AppointmentStatus.CANCELED);
-        appointmentRepository.save(appointment);
+
+        log.info("APPOINTMENT_EVENT={} | id={} | barberId={} | customerId={} | date={} | time={}",
+                AppointmentEvent.CANCELED,
+                appointment.getId(),
+                appointment.getBarber().getId(),
+                appointment.getCustomer().getId(),
+                appointment.getApptDay(),
+                appointment.getStartTime());
 
         notificationService.sendAppointmentCancellation(
                 appointment.getCustomer(),
@@ -103,6 +120,11 @@ public class AppointmentService {
                 .orElseThrow(() -> new AppointmentNotFoundException(id));
 
         appointmentRepository.delete(foundAppointment);
+        log.info("APPOINTMENT_EVENT={} appointmentId={} barberId={} customerId={}",
+                "DELETED",
+                foundAppointment.getId(),
+                foundAppointment.getBarber().getId(),
+                foundAppointment.getCustomer().getId());
     }
 
     public List<AppointmentResponseDTO> listAll() {

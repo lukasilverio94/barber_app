@@ -2,6 +2,7 @@ package com.barbershop.validation;
 
 
 import com.barbershop.exception.BarberNotAvailableException;
+import com.barbershop.exception.OutsideBusinessHoursException;
 import com.barbershop.repository.AppointmentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,10 +26,12 @@ public class AppointmentValidator {
         this.appointmentRepository = appointmentRepository;
     }
 
-    public boolean isWhithinBusinessHours(LocalTime time, LocalDate date) {
+    public void isWhithinBusinessHoursOrThrow(LocalTime time, LocalDate date) {
         var isShopClosed = time.isBefore(OPENING_TIME) || time.plusMinutes(APPOINTMENT_DURATION_IN_MINUTES).isAfter(CLOSING_TIME);
         var isSunday = date.getDayOfWeek() == DayOfWeek.SUNDAY;
-        return !isSunday && !isShopClosed;
+        if (isSunday || isShopClosed) {
+            throw new OutsideBusinessHoursException(time, date);
+        }
     }
 
     public void validateBarberAvailability(UUID barberId, LocalDate date, LocalTime time) {
