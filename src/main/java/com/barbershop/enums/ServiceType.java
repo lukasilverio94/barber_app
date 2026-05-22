@@ -1,5 +1,8 @@
 package com.barbershop.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ServiceType {
     HAIRCUT("Cabelo"),
     BEARD("Barba");
@@ -10,7 +13,4 @@ public enum ServiceType {
         this.portugueseDescription = portugueseDescription;
     }
 
-    public String getPortugueseDescription() {
-        return portugueseDescription;
-    }
 }
