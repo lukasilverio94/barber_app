@@ -63,7 +63,6 @@ public class AppointmentServiceTest {
 
         when(this.customerService.findCustomerByIdOrThrow(dto.customerId())).thenReturn(customer);
         when(this.barberService.findBarberByIdOrThrow(dto.barberId())).thenReturn(barber);
-        when(this.appointmentValidator.isWhithinBusinessHours(dto.startTime(), dto.date())).thenReturn(true);
         doNothing().when(this.appointmentValidator).validateBarberAvailability(dto.barberId(), dto.date(), dto.startTime());
         when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
 
@@ -81,13 +80,22 @@ public class AppointmentServiceTest {
 
     @Test
     void createAppointmentShouldThrowWhenOutsideBusinessHours() {
-        var dto = new AppointmentCreateDTO(UUID.randomUUID(), UUID.randomUUID(), LocalDate.now(), LocalTime.of(23, 0), ServiceType.HAIRCUT);
+        var dto = new AppointmentCreateDTO(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                LocalDate.now(),
+                LocalTime.of(23, 0),
+                ServiceType.HAIRCUT);
 
         when(customerService.findCustomerByIdOrThrow(dto.customerId())).thenReturn(new Customer());
         when(barberService.findBarberByIdOrThrow(dto.barberId())).thenReturn(new Barber());
-        when(appointmentValidator.isWhithinBusinessHours(dto.startTime(), dto.date())).thenReturn(false);
+        doThrow(new OutsideBusinessHoursException(dto.startTime(), dto.date()))
+                .when(appointmentValidator)
+                .isWhithinBusinessHoursOrThrow(dto.startTime(), dto.date());
 
-        assertThrows(OutsideBusinessHoursException.class, () -> appointmentService.createAppointment(dto));
+        assertThrows(OutsideBusinessHoursException.class,
+                () -> appointmentService.createAppointment(dto));
     }
+
 
 }

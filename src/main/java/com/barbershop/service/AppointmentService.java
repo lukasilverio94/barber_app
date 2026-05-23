@@ -55,7 +55,7 @@ public class AppointmentService {
                 saved.getCustomer().getId(),
                 saved.getApptDay(),
                 saved.getStartTime());
-        return AppointmentMapper.toDto(appointmentRepository.save(saved));
+        return AppointmentMapper.toDto(saved);
     }
 
     @Transactional
