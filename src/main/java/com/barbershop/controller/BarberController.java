@@ -1,6 +1,7 @@
 package com.barbershop.controller;
 
-import com.barbershop.dto.BarberDTO;
+import com.barbershop.dto.BarberRequestDTO;
+import com.barbershop.dto.BarberResponseDTO;
 import com.barbershop.dto.mappers.BarberMapper;
 import com.barbershop.model.Barber;
 import com.barbershop.service.BarberService;
@@ -19,13 +20,13 @@ public class BarberController {
     private final BarberService barberService;
 
     @PostMapping
-    public ResponseEntity<Barber> createBarber(@RequestBody @Valid  BarberDTO dto) {
+    public ResponseEntity<BarberResponseDTO> createBarber(@RequestBody @Valid BarberRequestDTO dto) {
         Barber barber = barberService.createBarber(dto);
-        return ResponseEntity.ok(barber);
+        return ResponseEntity.ok(BarberMapper.toResponseDTO(barber));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BarberDTO> getBarberById(@PathVariable UUID id) {
+    public ResponseEntity<BarberRequestDTO> getBarberById(@PathVariable UUID id) {
         Barber barber = barberService.findBarberByIdOrThrow(id);
         return ResponseEntity.ok(BarberMapper.toDTO(barber));
     }

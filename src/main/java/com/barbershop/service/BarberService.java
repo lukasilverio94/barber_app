@@ -1,6 +1,6 @@
 package com.barbershop.service;
 
-import com.barbershop.dto.BarberDTO;
+import com.barbershop.dto.BarberRequestDTO;
 import com.barbershop.exception.BarberNotFoundException;
 import com.barbershop.model.Barber;
 import com.barbershop.repository.BarberRepository;
@@ -17,7 +17,7 @@ public class BarberService {
     private final BarberRepository barberRepository;
 
     @Transactional
-    public Barber createBarber(BarberDTO dto) {
+    public Barber createBarber(BarberRequestDTO dto) {
         Barber barber = new Barber();
         barber.setName(dto.name());
         barber.setPhone(dto.phone());
