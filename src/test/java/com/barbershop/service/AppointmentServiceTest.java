@@ -2,7 +2,8 @@ package com.barbershop.service;
 
 import com.barbershop.dto.AppointmentCreateDTO;
 import com.barbershop.enums.ServiceType;
-import com.barbershop.exception.OutsideBusinessHoursException;
+import com.barbershop.exception.BarberNotAvailableException;
+import com.barbershop.exception.BarberNotWorkingException;
 import com.barbershop.model.Appointment;
 import com.barbershop.model.Barber;
 import com.barbershop.model.Customer;
@@ -36,8 +37,6 @@ public class AppointmentServiceTest {
     BarberService barberService;
     @Mock
     AppointmentValidator appointmentValidator;
-    @Mock
-    NotificationService notificationService;
 
     @InjectMocks
     AppointmentService appointmentService;
@@ -63,10 +62,12 @@ public class AppointmentServiceTest {
 
         when(this.customerService.findCustomerByIdOrThrow(dto.customerId())).thenReturn(customer);
         when(this.barberService.findBarberByIdOrThrow(dto.barberId())).thenReturn(barber);
-        doNothing().when(this.appointmentValidator).validateBarberAvailability(dto.barberId(), dto.date(), dto.startTime());
         when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
 
         var createdAppointment = this.appointmentService.createAppointment(dto);
+
+        verify(appointmentValidator).validateBarberScheduleOrThrow(dto.barberId(), dto.date(), dto.startTime());
+        verify(appointmentValidator).validateAppointmentConflictOrThrow(dto.barberId(), dto.date(), dto.startTime());
 
         // capture the saved appointment
         verify(appointmentRepository).save(this.appointment.capture());
@@ -79,22 +80,61 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    void createAppointmentShouldThrowWhenOutsideBusinessHours() {
+    void createAppointmentShouldThrowWhenBarberIsNotWorking() {
         var dto = new AppointmentCreateDTO(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 LocalDate.now(),
-                LocalTime.of(23, 0),
-                ServiceType.HAIRCUT);
+                LocalTime.of(10, 0),
+                ServiceType.HAIRCUT
+        );
+        var barber = new Barber();
+        barber.setId(dto.barberId());
 
-        when(customerService.findCustomerByIdOrThrow(dto.customerId())).thenReturn(new Customer());
-        when(barberService.findBarberByIdOrThrow(dto.barberId())).thenReturn(new Barber());
-        doThrow(new OutsideBusinessHoursException(dto.startTime(), dto.date()))
-                .when(appointmentValidator)
-                .isWhithinBusinessHoursOrThrow(dto.startTime(), dto.date());
+        when(customerService.findCustomerByIdOrThrow(dto.customerId()))
+                .thenReturn(new Customer());
 
-        assertThrows(OutsideBusinessHoursException.class,
+        when(barberService.findBarberByIdOrThrow(dto.barberId())).
+                thenReturn(barber);
+
+        doThrow(new BarberNotWorkingException(dto.date(), dto.startTime()))
+                .when(appointmentValidator).validateBarberScheduleOrThrow(dto.barberId(), dto.date(), dto.startTime());
+
+        assertThrows(
+                BarberNotWorkingException.class,
                 () -> appointmentService.createAppointment(dto));
+
+        verify(appointmentRepository, never()).save(any());
+    }
+
+    @Test
+    void createAppointmentShouldThrowWhenBarberAlreadyHasAppointment() {
+        var dto = new AppointmentCreateDTO(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                LocalDate.now(),
+                LocalTime.of(10, 0),
+                ServiceType.HAIRCUT
+        );
+
+        var barber = new Barber();
+        barber.setId(dto.barberId());
+
+        when(customerService.findCustomerByIdOrThrow(dto.customerId()))
+                .thenReturn(new Customer());
+
+        when(barberService.findBarberByIdOrThrow(dto.barberId()))
+                .thenReturn(barber);
+
+        doThrow(new BarberNotAvailableException("Barber not available at this time. Try again"))
+                .when(appointmentValidator)
+                .validateAppointmentConflictOrThrow(dto.barberId(), dto.date(), dto.startTime());
+
+        assertThrows(
+                BarberNotAvailableException.class,
+                () -> appointmentService.createAppointment(dto)
+        );
+        verify(appointmentRepository, never()).save(any());
     }
 
 
